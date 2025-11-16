@@ -16,9 +16,13 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    @if(auth()->user()->isSuperAdmin())
+                    @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
                     <x-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
                         {{ __('Clientes') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('mapa.clientes')" :active="request()->routeIs('mapa.*')">
+                        🗺️ {{ __('Mapa') }}
                     </x-nav-link>
                     @endif
                 </div>
@@ -77,9 +81,13 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
-            @if(auth()->user()->isSuperAdmin())
+            @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
             <x-responsive-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
                 {{ __('Clientes') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('mapa.clientes')" :active="request()->routeIs('mapa.*')">
+                🗺️ {{ __('Mapa') }}
             </x-responsive-nav-link>
             @endif
         </div>
