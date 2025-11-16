@@ -90,9 +90,17 @@ Route::middleware('auth')->group(function () {
         // Rutas de testimonios
         // Route::resource('testimonios', TestimonioController::class);
 
+        Route::resource('testimonios', \App\Http\Controllers\TestimonioController::class);
+        Route::patch('/testimonios/{testimonio}/toggle', [\App\Http\Controllers\TestimonioController::class, 'toggleVisible'])->name('testimonios.toggle');
+
+
         // Rutas de promociones
         // Route::resource('promociones', PromocionController::class);
 
+        /* Route::resource('promociones', \App\Http\Controllers\PromocionController::class); */
+        Route::resource('promociones', \App\Http\Controllers\PromocionController::class)->parameters([
+            'promociones' => 'promocion'
+        ]);
         // Rutas de usuarios/vendedores
         // Route::resource('usuarios', UsuarioController::class);
     });

@@ -25,6 +25,18 @@
                         🗺️ {{ __('Mapa') }}
                     </x-nav-link>
                     @endif
+
+                    @if(auth()->user()->isSuperAdmin())
+                    <x-nav-link :href="route('testimonios.index')" :active="request()->routeIs('testimonios.*')">
+                        {{ __('Testimonios') }}
+                        </x-nav-link>
+                    @endif
+
+                    @if(auth()->user()->isSuperAdmin())
+                        <x-nav-link :href="route('promociones.index')" :active="request()->routeIs('promociones.*')">
+                        {{ __('Promociones') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -90,6 +102,19 @@
                 🗺️ {{ __('Mapa') }}
             </x-responsive-nav-link>
             @endif
+
+            @if(auth()->user()->isSuperAdmin())
+                <x-nav-link :href="route('testimonios.index')" :active="request()->routeIs('testimonios.*')">
+                {{ __('Testimonios') }}
+                </x-nav-link>
+            @endif
+
+            @if(auth()->user()->isSuperAdmin())
+                <x-nav-link :href="route('promociones.index')" :active="request()->routeIs('promociones.*')">
+                 {{ __('Promociones') }}
+                </x-nav-link>
+            @endif
+
         </div>
 
         <!-- Responsive Settings Options -->
