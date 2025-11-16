@@ -18,11 +18,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ============================================
+    // RUTAS PARA SUPERADMIN Y ADMIN
+    // ============================================
+    Route::middleware(['role:superadmin,administrador'])->group(function () {
+        // Búsqueda de clientes (DEBE IR ANTES del resource)
+        Route::get('/clientes/buscar', [\App\Http\Controllers\ClienteController::class, 'buscar'])->name('clientes.buscar');
+    });
+
+    // ============================================
     // RUTAS SOLO PARA SUPERADMIN
     // ============================================
     Route::middleware(['superadmin'])->group(function () {
         // Rutas de clientes
-        // Route::resource('clientes', ClienteController::class);
+        Route::resource('clientes', \App\Http\Controllers\ClienteController::class);
 
         // Rutas de testimonios
         // Route::resource('testimonios', TestimonioController::class);
@@ -32,14 +40,6 @@ Route::middleware('auth')->group(function () {
 
         // Rutas de usuarios/vendedores
         // Route::resource('usuarios', UsuarioController::class);
-    });
-
-    // ============================================
-    // RUTAS PARA SUPERADMIN Y ADMIN
-    // ============================================
-    Route::middleware(['role:superadmin,administrador'])->group(function () {
-        // Búsqueda de clientes
-        // Route::get('/clientes/buscar', [ClienteController::class, 'buscar'])->name('clientes.buscar');
     });
 });
 
