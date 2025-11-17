@@ -1,0 +1,176 @@
+/* ============================================
+   FOOTER MINIMALISTA - Estilo Unilever
+   ============================================ */
+
+footer {
+    background: #2c3e50;
+    color: white;
+    padding: 2.5rem 5% 1.5rem;
+}
+
+.footer-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* Redes sociales - Primera fila */
+.footer-social {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.social-icons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.social-icons svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Enlaces horizontales - Segunda fila */
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+}
+
+.footer-links a {
+    color: #bdc3c7;
+    text-decoration: none;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+}
+
+.footer-links a:not(:last-child)::after {
+    content: '|';
+    margin-left: 1rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.footer-links a:hover {
+    color: #667eea;
+}
+
+/* Copyright - Tercera fila */
+.footer-bottom {
+    text-align: center;
+}
+
+.footer-bottom p {
+    color: #95a5a6;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablets */
+@media (max-width: 968px) {
+    footer {
+        padding: 2rem 4% 1.5rem;
+    }
+    
+    .footer-content {
+        gap: 1.2rem;
+    }
+    
+    .footer-links a {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .footer-links a:not(:last-child)::after {
+        margin-left: 0.8rem;
+    }
+}
+
+/* Móviles */
+@media (max-width: 600px) {
+    footer {
+        padding: 2rem 3% 1.5rem;
+    }
+    
+    .footer-content {
+        gap: 1.5rem;
+    }
+    
+    .social-icons {
+        gap: 0.8rem;
+    }
+    
+    .social-icons a {
+        width: 38px;
+        height: 38px;
+    }
+    
+    .social-icons svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    /* Enlaces apilados en móvil */
+    .footer-links {
+        flex-direction: column;
+        gap: 0;
+        padding: 1rem 0;
+    }
+    
+    .footer-links a {
+        font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+        width: 100%;
+        text-align: center;
+    }
+    
+    /* Quitar separadores en móvil */
+    .footer-links a:not(:last-child)::after {
+        content: none;
+    }
+    
+    /* Agregar líneas divisorias en móvil */
+    .footer-links a:not(:last-child) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .footer-bottom p {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+}

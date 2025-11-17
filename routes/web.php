@@ -48,7 +48,7 @@
 
 
 
-
+use App\Http\Controllers\WebController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MapaClienteController;
@@ -56,6 +56,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
+});
+
+Route::controller(WebController::class)->group(function () {
+    Route::get('/', 'home')->name('web.home');
+    Route::get('/productos', 'productos')->name('web.productos');
+    Route::get('/nosotros', 'nosotros')->name('web.nosotros');
+    Route::get('/valores', 'valores')->name('web.valores');
+    Route::get('/contacto', 'contacto')->name('web.contacto');
 });
 
 Route::middleware('auth')->group(function () {
