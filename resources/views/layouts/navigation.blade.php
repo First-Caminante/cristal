@@ -28,14 +28,16 @@
 
                     @if(auth()->user()->isSuperAdmin())
                     <x-nav-link :href="route('testimonios.index')" :active="request()->routeIs('testimonios.*')">
-                        {{ __('Testimonios') }}
-                        </x-nav-link>
-                    @endif
+                        💬 {{ __('Testimonios') }}
+                    </x-nav-link>
 
-                    @if(auth()->user()->isSuperAdmin())
-                        <x-nav-link :href="route('promociones.index')" :active="request()->routeIs('promociones.*')">
-                        {{ __('Promociones') }}
-                        </x-nav-link>
+                    <x-nav-link :href="route('promociones.index')" :active="request()->routeIs('promociones.*')">
+                        🎁 {{ __('Promociones') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.*')">
+                        👥 {{ __('Usuarios') }}
+                    </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -104,17 +106,18 @@
             @endif
 
             @if(auth()->user()->isSuperAdmin())
-                <x-nav-link :href="route('testimonios.index')" :active="request()->routeIs('testimonios.*')">
-                {{ __('Testimonios') }}
-                </x-nav-link>
-            @endif
+            <x-responsive-nav-link :href="route('testimonios.index')" :active="request()->routeIs('testimonios.*')">
+                💬 {{ __('Testimonios') }}
+            </x-responsive-nav-link>
 
-            @if(auth()->user()->isSuperAdmin())
-                <x-nav-link :href="route('promociones.index')" :active="request()->routeIs('promociones.*')">
-                 {{ __('Promociones') }}
-                </x-nav-link>
-            @endif
+            <x-responsive-nav-link :href="route('promociones.index')" :active="request()->routeIs('promociones.*')">
+                🎁 {{ __('Promociones') }}
+            </x-responsive-nav-link>
 
+            <x-responsive-nav-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.*')">
+                👥 {{ __('Usuarios') }}
+            </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

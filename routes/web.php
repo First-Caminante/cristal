@@ -103,6 +103,12 @@ Route::middleware('auth')->group(function () {
         ]);
         // Rutas de usuarios/vendedores
         // Route::resource('usuarios', UsuarioController::class);
+        //
+        //
+        // 👥 RUTAS DE USUARIOS/VENDEDORES
+        Route::get('/usuarios/buscar', [\App\Http\Controllers\UsuarioController::class, 'buscar'])->name('usuarios.buscar');
+        Route::patch('/usuarios/{usuario}/toggle-estado', [\App\Http\Controllers\UsuarioController::class, 'toggleEstado'])->name('usuarios.toggle-estado');
+        Route::resource('usuarios', \App\Http\Controllers\UsuarioController::class);
     });
 });
 
