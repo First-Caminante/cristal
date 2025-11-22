@@ -13,13 +13,13 @@
         </div>
     </x-slot>
 
-    <div class="py-6 h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 h-full">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg h-[calc(100%-4rem)]">
-                <div class="p-4 h-full">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 h-full">
+    <div class="py-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white shadow-sm sm:rounded-lg">
+                <div class="p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <!-- Panel Lateral de Clientes -->
-                        <div class="md:col-span-1 flex flex-col h-full">
+                        <div class="md:col-span-1 flex flex-col">
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Buscar Clientes</label>
                                 <input type="text" id="search-input" placeholder="Nombre, zona o teléfono..."
@@ -69,7 +69,7 @@
                         </div>
 
                         <!-- Mapa -->
-                        <div class="md:col-span-3 relative h-full">
+                        <div class="md:col-span-3 relative h-[600px] md:h-[800px]" id="map-container">
                             <div id="map" class="w-full h-full rounded-lg shadow-inner"></div>
 
                             <!-- Info de Ruta Flotante -->
@@ -221,22 +221,22 @@
                     };
 
                     item.innerHTML = `
-                                                                    <div class="flex items-center h-5 mt-1">
-                                                                        <input type="checkbox" 
-                                                                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                                                               ${isSelected ? 'checked' : ''}
-                                                                               onchange="toggleClientSelection(${cliente.id})">
-                                                                    </div>
-                                                                    <div class="flex-1 min-w-0">
-                                                                        <p class="text-sm font-medium text-gray-900 truncate">
-                                                                            ${cliente.nombre}
-                                                                        </p>
-                                                                        <p class="text-xs text-gray-500 truncate">
-                                                                            ${cliente.direccion?.zona || 'Sin zona'}
-                                                                        </p>
-                                                                        ${cliente.telefono ? `<p class="text-xs text-gray-400">${cliente.telefono}</p>` : ''}
-                                                                    </div>
-                                                                `;
+                                                                                                            <div class="flex items-center h-5 mt-1">
+                                                                                                                <input type="checkbox" 
+                                                                                                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                                                                                                       ${isSelected ? 'checked' : ''}
+                                                                                                                       onchange="toggleClientSelection(${cliente.id})">
+                                                                                                            </div>
+                                                                                                            <div class="flex-1 min-w-0">
+                                                                                                                <p class="text-sm font-medium text-gray-900 truncate">
+                                                                                                                    ${cliente.nombre}
+                                                                                                                </p>
+                                                                                                                <p class="text-xs text-gray-500 truncate">
+                                                                                                                    ${cliente.direccion?.zona || 'Sin zona'}
+                                                                                                                </p>
+                                                                                                                ${cliente.telefono ? `<p class="text-xs text-gray-400">${cliente.telefono}</p>` : ''}
+                                                                                                            </div>
+                                                                                                        `;
 
                     container.appendChild(item);
                 });
@@ -345,10 +345,10 @@
                 const hoverColor = isSelected ? 'hover:bg-green-600' : 'hover:bg-red-600';
 
                 element.innerHTML = `
-                                                        <div class="w-8 h-8 ${bgColor} rounded-full border-2 border-white shadow-lg flex items-center justify-center cursor-pointer ${hoverColor} transition transform hover:scale-110">
-                                                            <span class="text-white text-xs font-bold">${isSelected ? '✓' : ''}</span>
-                                                        </div>
-                                                    `;
+                                                                                                <div class="w-8 h-8 ${bgColor} rounded-full border-2 border-white shadow-lg flex items-center justify-center cursor-pointer ${hoverColor} transition transform hover:scale-110">
+                                                                                                    <span class="text-white text-xs font-bold">${isSelected ? '✓' : ''}</span>
+                                                                                                </div>
+                                                                                            `;
             }
 
 
@@ -357,40 +357,40 @@
                 let fotosHtml = '';
                 if (cliente.fotos && cliente.fotos.length > 0) {
                     fotosHtml = `
-                                                                    <div class="mt-2 grid grid-cols-2 gap-2">
-                                                                        ${cliente.fotos.slice(0, 4).map(foto => `
-                                                                            <img src="${foto.url}" alt="${foto.descripcion}"
-                                                                                 class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75"
-                                                                                 onclick="window.open('${foto.url}', '_blank')">
-                                                                        `).join('')}
-                                                                    </div>
-                                                                `;
+                                                                                                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                                                                                                ${cliente.fotos.slice(0, 4).map(foto => `
+                                                                                                                    <img src="${foto.url}" alt="${foto.descripcion}"
+                                                                                                                         class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75"
+                                                                                                                         onclick="window.open('${foto.url}', '_blank')">
+                                                                                                                `).join('')}
+                                                                                                            </div>
+                                                                                                        `;
                 }
 
                 return `
-                                                                <div class="p-2">
-                                                                    <h3 class="font-bold text-lg text-gray-900">${cliente.nombre}</h3>
-                                                                    <p class="text-sm text-gray-600 mt-1">
-                                                                        <strong>📍</strong> ${cliente.direccion?.completa || 'Sin dirección'}
-                                                                    </p>
-                                                                    ${cliente.telefono ? `
-                                                                        <p class="text-sm text-gray-600 mt-1">
-                                                                            <strong>📞</strong> ${cliente.telefono}
-                                                                        </p>
-                                                                    ` : ''}
-                                                                    ${cliente.direccion?.referencia ? `
-                                                                        <p class="text-sm text-gray-600 mt-1">
-                                                                            <strong>ℹ️</strong> ${cliente.direccion.referencia}
-                                                                        </p>
-                                                                    ` : ''}
-                                                                    ${fotosHtml}
-                                                                    <div class="mt-2">
-                                                                        <a href="/clientes/${cliente.id}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                                                            Ver detalles →
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            `;
+                                                                                                        <div class="p-2">
+                                                                                                            <h3 class="font-bold text-lg text-gray-900">${cliente.nombre}</h3>
+                                                                                                            <p class="text-sm text-gray-600 mt-1">
+                                                                                                                <strong>📍</strong> ${cliente.direccion?.completa || 'Sin dirección'}
+                                                                                                            </p>
+                                                                                                            ${cliente.telefono ? `
+                                                                                                                <p class="text-sm text-gray-600 mt-1">
+                                                                                                                    <strong>📞</strong> ${cliente.telefono}
+                                                                                                                </p>
+                                                                                                            ` : ''}
+                                                                                                            ${cliente.direccion?.referencia ? `
+                                                                                                                <p class="text-sm text-gray-600 mt-1">
+                                                                                                                    <strong>ℹ️</strong> ${cliente.direccion.referencia}
+                                                                                                                </p>
+                                                                                                            ` : ''}
+                                                                                                            ${fotosHtml}
+                                                                                                            <div class="mt-2">
+                                                                                                                <a href="/clientes/${cliente.id}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                                                                                                    Ver detalles →
+                                                                                                                </a>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    `;
             }
 
             // Obtener coordenadas del cliente
@@ -440,21 +440,58 @@
                 }
             }
 
-            // Calcular ruta multipunto
+            // Calcular distancia entre dos coordenadas (Haversine simple o Euclídea para distancias cortas)
+            function calculateDistance(coord1, coord2) {
+                const R = 6371e3; // Radio de la tierra en metros
+                const φ1 = coord1[1] * Math.PI / 180;
+                const φ2 = coord2[1] * Math.PI / 180;
+                const Δφ = (coord2[1] - coord1[1]) * Math.PI / 180;
+                const Δλ = (coord2[0] - coord1[0]) * Math.PI / 180;
+
+                const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                    Math.cos(φ1) * Math.cos(φ2) *
+                    Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+                return R * c;
+            }
+
+            // Ordenar clientes por vecino más cercano (Nearest Neighbor)
+            function sortClientsByDistance(startCoord, clients) {
+                const sorted = [];
+                let currentCoord = startCoord;
+                const remaining = [...clients];
+
+                while (remaining.length > 0) {
+                    let nearestIndex = -1;
+                    let minDistance = Infinity;
+
+                    for (let i = 0; i < remaining.length; i++) {
+                        const dist = calculateDistance(currentCoord, remaining[i].coords);
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            nearestIndex = i;
+                        }
+                    }
+
+                    if (nearestIndex !== -1) {
+                        const nearest = remaining.splice(nearestIndex, 1)[0];
+                        sorted.push(nearest);
+                        currentCoord = nearest.coords;
+                    }
+                }
+
+                return sorted;
+            }
+
+            // Calcular ruta optimizada (Usando Directions API + Nearest Neighbor)
             async function calculateRoute() {
                 if (!userLocation || selectedClientIds.size === 0) {
                     alert('Por favor, activa tu ubicación y selecciona al menos un cliente');
                     return;
                 }
 
-                // Construir lista de coordenadas: Inicio (Usuario) -> Clientes Seleccionados
-                const coordinates = [userLocation];
-
-                // Obtener clientes seleccionados en el orden que aparecen en allClientes (o podríamos mantener orden de selección)
-                // Para optimizar ruta, Mapbox tiene Optimization API, pero usaremos Directions API en orden de lista por simplicidad
-                // o el orden de selección si lo hubiéramos guardado. Aquí usaremos el orden de la lista filtrada/general.
-
-                // Mejor aproximación: Usar los IDs seleccionados y buscar sus coords
+                // Obtener clientes seleccionados
                 const selectedClients = allClientes.filter(c => selectedClientIds.has(c.id));
 
                 // Verificar coordenadas válidas
@@ -471,13 +508,16 @@
                     return;
                 }
 
-                // Agregar coordenadas de clientes a la ruta
-                validClients.forEach(client => {
+                // Ordenar clientes para ruta eficiente (Nearest Neighbor)
+                const sortedClients = sortClientsByDistance(userLocation, validClients);
+
+                // Construir lista de coordenadas: Inicio (Usuario) -> Clientes Ordenados
+                const coordinates = [userLocation];
+                sortedClients.forEach(client => {
                     coordinates.push(client.coords);
                 });
 
                 // Construir string de coordenadas para la API
-                // Formato: lng,lat;lng,lat;...
                 const coordinatesString = coordinates.map(c => `${c[0]},${c[1]}`).join(';');
 
                 // Limpiar ruta anterior
@@ -486,7 +526,7 @@
                     if (map.getSource('route')) map.removeSource('route');
                 }
 
-                // Solicitar ruta a Mapbox Directions API
+                // Solicitar ruta a Mapbox Directions API (Soporta hasta 25 coordenadas)
                 const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coordinatesString}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
 
                 try {
@@ -570,15 +610,15 @@
                                     const style = document.createElement('style');
                                     style.id = 'pulse-style';
                                     style.innerHTML = `
-                                                                                    @keyframes pulse {
-                                                                                        0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-                                                                                        70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-                                                                                        100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-                                                                                    }
-                                                                                    .pulse-animation {
-                                                                                        animation: pulse 2s infinite;
-                                                                                    }
-                                                                                `;
+                                                                                                                            @keyframes pulse {
+                                                                                                                                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+                                                                                                                                70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+                                                                                                                                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+                                                                                                                            }
+                                                                                                                            .pulse-animation {
+                                                                                                                                animation: pulse 2s infinite;
+                                                                                                                            }
+                                                                                                                        `;
                                     document.head.appendChild(style);
                                 }
 
