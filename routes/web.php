@@ -75,6 +75,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Rutas para administrar inicio (movidas aquí según la instrucción)
+    Route::get('/admin/home', [\App\Http\Controllers\AdminHomeController::class, 'edit'])->name('admin.home.edit');
+    Route::put('/admin/home', [\App\Http\Controllers\AdminHomeController::class, 'update'])->name('admin.home.update');
+    Route::post('/admin/home/upload', [\App\Http\Controllers\AdminHomeController::class, 'upload'])->name('admin.home.upload');
+
+
     // ============================================
     // RUTAS PARA SUPERADMIN Y ADMIN
     // ============================================
@@ -110,7 +116,11 @@ Route::middleware('auth')->group(function () {
             'promociones' => 'promocion'
         ]);
         // Rutas de usuarios/vendedores
-        // Route::resource('usuarios', UsuarioController::class);
+        Route::resource('usuarios', \App\Http\Controllers\UsuarioController::class);
+
+        // Rutas para administrar inicio
+        Route::get('/admin/inicio', [\App\Http\Controllers\AdminHomeController::class, 'edit'])->name('admin.home.edit');
+        Route::put('/admin/inicio', [\App\Http\Controllers\AdminHomeController::class, 'update'])->name('admin.home.update');
     });
 });
 

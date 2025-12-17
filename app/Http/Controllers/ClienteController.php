@@ -94,7 +94,7 @@ class ClienteController extends Controller
 
             // Fotos (máximo 3)
             'fotos' => 'nullable|array|max:3',
-            'fotos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'fotos.*' => 'image|mimes:jpeg,png,jpg,gif|max:15360',
         ]);
 
         DB::beginTransaction();
@@ -199,7 +199,7 @@ class ClienteController extends Controller
             'direccion.referencia' => 'nullable|string|max:255',
 
             'fotos' => 'nullable|array|max:3',
-            'fotos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'fotos.*' => 'image|mimes:jpeg,png,jpg,gif|max:15360',
             'fotos_eliminar' => 'nullable|array',
         ]);
 

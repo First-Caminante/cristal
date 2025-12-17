@@ -24,6 +24,21 @@ DROP TABLE IF EXISTS cliente_telefonos;
 DROP TABLE IF EXISTS clientes;
 DROP TABLE IF EXISTS usuarios;
 DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS sessions;
+
+-- =========================
+-- TABLA: SESSIONS (Laravel)
+-- =========================
+CREATE TABLE sessions (
+    id VARCHAR(255) PRIMARY KEY,
+    user_id INT NULL,
+    ip_address VARCHAR(45) NULL,
+    user_agent TEXT NULL,
+    payload LONGTEXT NOT NULL,
+    last_activity INT NOT NULL,
+    INDEX sessions_user_id_index (user_id),
+    INDEX sessions_last_activity_index (last_activity)
+);
 
 -- =========================
 -- TABLA: ROLES

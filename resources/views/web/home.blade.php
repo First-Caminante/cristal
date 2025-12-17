@@ -7,19 +7,19 @@
 @endsection
 
 @section('content')
+    <!-- DEBUG: {{ json_encode($content) }} -->
     <!-- HERO SECTION -->
     <section id="inicio" class="hero">
         <div class="hero-background"></div>
         <div class="hero-container">
             <div class="hero-content">
-                <h1>Industrias Cristal</h1>
-                <p>Cosméticos de calidad premium para tu cuidado personal. Descubre nuestra línea completa de productos para
-                    el cabello y la piel.</p>
+                <h1>{{ $content['hero']['title'] }}</h1>
+                <p>{{ $content['hero']['text'] }}</p>
                 <a href="{{ route('web.productos') }}" class="cta-button">Conoce Nuestros Productos</a>
             </div>
             <div class="hero-image">
                 <div class="hero-image-wrapper">
-                    <img src="{{ asset('assets/images/home/home1.jpg') }}" alt="Productos Cristal">
+                    <img src="{{ asset('storage/' . $content['hero']['image']) }}" alt="Productos Cristal">
                     <div class="hero-image-decoration"></div>
                 </div>
             </div>
@@ -98,45 +98,29 @@
         <div class="featured-container">
             <div class="featured-image">
                 <div class="image-wrapper">
-                    <img src="{{ asset('assets/images/productos/shamp1.jpeg') }}" alt="Producto Destacado">
+                    <img src="{{ asset('storage/' . $content['featured']['image']) }}" alt="Producto Destacado">
                     <div class="image-decoration"></div>
                 </div>
             </div>
             <div class="featured-content">
                 <span class="featured-tag">PRODUCTO ESTRELLA</span>
-                <h2>Shampoo Cristal Premium</h2>
+                <h2>{{ $content['featured']['title'] }}</h2>
                 <p class="featured-description">
-                    Nuestro producto más icónico que ha conquistado miles de hogares.
-                    Con fórmula enriquecida que nutre profundamente tu cabello,
-                    dejándolo suave, brillante y saludable desde la primera aplicación.
+                    {{ $content['featured']['description'] }}
                 </p>
                 <ul class="featured-benefits">
-                    <li>
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path
-                                d="M7 10L9 12L13 8M19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        Nutre e hidrata profundamente
-                    </li>
-                    <li>
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path
-                                d="M7 10L9 12L13 8M19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        Protección contra el daño diario
-                    </li>
-                    <li>
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path
-                                d="M7 10L9 12L13 8M19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10Z"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                        Brillo y suavidad instantáneos
-                    </li>
+                    @foreach($content['featured']['benefits'] as $benefit)
+                        <li>
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path
+                                    d="M7 10L9 12L13 8M19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1C14.9706 1 19 5.02944 19 10Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            {{ $benefit }}
+                        </li>
+                    @endforeach
                 </ul>
-                <a href="{{ route('web.productos') }}" class="featured-button">Ver Producto</a>
+                <!-- Botón eliminado por solicitud -->
             </div>
         </div>
     </section>

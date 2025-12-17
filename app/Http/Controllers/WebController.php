@@ -22,7 +22,43 @@ class WebController extends Controller
         // Obtener promoción activa (si hay)
         $promocion = Promocion::activas()->with('fotos')->first();
 
-        return view('web.home', compact('testimonios', 'promocion'));
+        // Obtener contenido dinámico del home
+        $content = $this->getHomeContent();
+
+        return view('web.home', compact('testimonios', 'promocion', 'content'));
+    }
+
+    private function getHomeContent()
+    {
+        $jsonPath = storage_path('app/home_content.json');
+        $content = null;
+
+        if (file_exists($jsonPath)) {
+            $content = json_decode(file_get_contents($jsonPath), true);
+        }
+
+        // If content is null (empty file) or not an array, use defaults
+        if (!is_array($content)) {
+            return [
+                'hero' => [
+                    'title' => 'Industrias Cristal',
+                    'text' => 'Cosméticos de calidad premium para tu cuidado personal. Descubre nuestra línea completa de productos para el cabello y la piel.',
+                    'image' => 'home/default_hero.jpg',
+                ],
+                'featured' => [
+                    'title' => 'Shampoo Cristal Premium',
+                    'description' => 'Nuestro producto más icónico que ha conquistado miles de hogares. Con fórmula enriquecida que nutre profundamente tu cabello, dejándolo suave, brillante y saludable desde la primera aplicación.',
+                    'image' => 'home/default_featured.jpg',
+                    'benefits' => [
+                        'Nutre e hidrata profundamente',
+                        'Protección contra el daño diario',
+                        'Brillo y suavidad instantáneos'
+                    ]
+                ]
+            ];
+        }
+
+        return $content;
     }
 
     /**
