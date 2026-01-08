@@ -4,10 +4,12 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Gestión de Usuarios') }}
             </h2>
-            <a href="{{ route('usuarios.create') }}"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Nuevo Usuario
-            </a>
+            @if(auth()->user()->isSuperAdmin())
+                <a href="{{ route('usuarios.create') }}"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Nuevo Usuario
+                </a>
+            @endif
         </div>
     </x-slot>
 
@@ -46,9 +48,12 @@
                                     <th
                                         class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Estado</th>
-                                    <th
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Acciones</th>
+                                    @if(auth()->user()->isSuperAdmin())
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Acciones
+                                        </th>
+                                    @endif
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -74,20 +79,22 @@
                                                 {{ $usuario->estado ? 'Activo' : 'Inactivo' }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                            <a href="{{ route('usuarios.edit', $usuario) }}"
-                                                class="text-indigo-600 hover:text-indigo-900">Editar</a>
-                                            @if($usuario->id !== auth()->id())
-                                                <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST"
-                                                    class="inline"
-                                                    onsubmit="return confirm('¿Estás seguro de eliminar este usuario?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="text-red-600 hover:text-red-900">Eliminar</button>
-                                                </form>
-                                            @endif
-                                        </td>
+                                        @if(auth()->user()->isSuperAdmin())
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                                <a href="{{ route('usuarios.edit', $usuario) }}"
+                                                    class="text-indigo-600 hover:text-indigo-900">Editar</a>
+                                                @if($usuario->id !== auth()->id())
+                                                    <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST"
+                                                        class="inline"
+                                                        onsubmit="return confirm('¿Estás seguro de eliminar este usuario?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit"
+                                                            class="text-red-600 hover:text-red-900">Eliminar</button>
+                                                    </form>
+                                                @endif
+                                            </td>
+                                        @endif
                                     </tr>
                                 @empty
                                     <tr>
@@ -131,23 +138,25 @@
                                 </p>
                             </div>
 
-                            <div class="flex space-x-2">
-                                <a href="{{ route('usuarios.edit', $usuario) }}"
-                                    class="flex-1 bg-indigo-500 hover:bg-indigo-700 text-white text-center font-bold py-2 px-4 rounded text-sm">
-                                    Editar
-                                </a>
-                                @if($usuario->id !== auth()->id())
-                                    <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST"
-                                        onsubmit="return confirm('¿Estás seguro?')" class="flex-1">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-sm">
-                                            Eliminar
-                                        </button>
-                                    </form>
-                                @endif
-                            </div>
+                            @if(auth()->user()->isSuperAdmin())
+                                <div class="flex space-x-2">
+                                    <a href="{{ route('usuarios.edit', $usuario) }}"
+                                        class="flex-1 bg-indigo-500 hover:bg-indigo-700 text-white text-center font-bold py-2 px-4 rounded text-sm">
+                                        Editar
+                                    </a>
+                                    @if($usuario->id !== auth()->id())
+                                        <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST"
+                                            onsubmit="return confirm('¿Estás seguro?')" class="flex-1">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-sm">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                     </div>
                 @empty

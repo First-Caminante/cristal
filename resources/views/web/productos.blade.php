@@ -19,10 +19,12 @@
     <div class="quick-nav-wrapper">
         <div class="quick-nav">
             <div class="quick-nav-buttons">
-                <a href="{{ route('web.productos') }}" class="nav-button">Todos los Productos</a>
-                @foreach($categoriasValidas as $cat)
-                    <a href="{{ route('web.productos', ['categoria' => $cat]) }}" class="nav-button">
-                        {{ ucfirst(str_replace('-', ' ', $cat)) }}
+                <a href="{{ route('web.productos') }}" class="nav-button {{ $categoria === 'todas' ? 'active' : '' }}">Todos
+                    los Productos</a>
+                @foreach($categorias as $cat)
+                    <a href="{{ route('web.productos', ['categoria' => $cat->slug]) }}"
+                        class="nav-button {{ $categoria === $cat->slug ? 'active' : '' }}">
+                        {{ $cat->nombre }}
                     </a>
                 @endforeach
             </div>
@@ -30,29 +32,40 @@
     </div>
 
     <div class="contenedor-productos">
-        @if($categoria === 'todas' || $categoria === 'shampoos')
-            @include('web.productos.shampoos')
-        @endif
+        <div class="products-grid">
+            @forelse($productos as $producto)
+                <div class="product-card">
+                    <div class="product-icon">
+                        @if($producto->imagen)
+                            <img src="{{ asset('storage/' . $producto->imagen) }}" alt="{{ $producto->nombre }}"
+                                class="product-image">
+                        @else
+                            <div class="no-img-placeholder flex items-center justify-center bg-gray-100 rounded-lg w-full h-full">
+                                <span class="text-gray-400">Sin Imagen</span>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="product-info">
+                        <h3 class="mt-4">{{ $producto->nombre }}</h3>
+                        @if($producto->descripcion)
+                            <p class="description">{{ $producto->descripcion }}</p>
+                        @endif
 
-        @if($categoria === 'todas' || $categoria === 'acondicionadores')
-            @include('web.productos.acondicionadores')
-        @endif
-
-        @if($categoria === 'todas' || $categoria === 'cremas')
-            @include('web.productos.cremas')
-        @endif
-
-        @if($categoria === 'todas' || $categoria === 'tratamientos')
-            @include('web.productos.tratamientos')
-        @endif
-
-        @if($categoria === 'todas' || $categoria === 'linea-natural')
-            @include('web.productos.linea-natural')
-        @endif
-
-        @if($categoria === 'todas' || $categoria === 'linea-infantil')
-            @include('web.productos.linea-infantil')
-        @endif
+                        @if($producto->caracteristicas && count($producto->caracteristicas) > 0)
+                            <div class="product-features mt-4">
+                                @foreach($producto->caracteristicas as $caract)
+                                    <span class="feature-badge">{{ $caract }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full py-12 text-center">
+                    <p class="text-gray-500 text-xl font-medium">No se encontraron productos en esta categoría.</p>
+                </div>
+            @endforelse
+        </div>
     </div>
 @endsection
 

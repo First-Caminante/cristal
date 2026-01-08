@@ -16,32 +16,46 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
+                    {{-- Clientes y Mapa: Para todos (Superadmin, Administrador, Vendedor) --}}
+                    <x-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
+                        {{ __('Clientes') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('mapa.clientes')" :active="request()->routeIs('mapa.*')">
+                        🗺️ {{ __('Mapa') }}
+                    </x-nav-link>
+
+                    {{-- Testimonios y Promociones: Solo Superadmin y Administrador --}}
                     @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
-                        <x-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
-                            {{ __('Clientes') }}
-                        </x-nav-link>
-
-                        <x-nav-link :href="route('mapa.clientes')" :active="request()->routeIs('mapa.*')">
-                            🗺️ {{ __('Mapa') }}
-                        </x-nav-link>
-                        @if(auth()->user()->isSuperAdmin())
-                            <x-nav-link :href="route('admin.home.edit')" :active="request()->routeIs('admin.home.*')">
-                                {{ __('Administrar Inicio') }}
-                            </x-nav-link>
-                        @endif
-                    @endif
-
-                    @if(auth()->user()->isSuperAdmin())
                         <x-nav-link :href="route('testimonios.index')" :active="request()->routeIs('testimonios.*')">
                             {{ __('Testimonios') }}
                         </x-nav-link>
-                    @endif
 
-                    @if(auth()->user()->isSuperAdmin())
                         <x-nav-link :href="route('promociones.index')" :active="request()->routeIs('promociones.*')">
                             {{ __('Promociones') }}
                         </x-nav-link>
+                    @endif
 
+                    {{-- Administrar Inicio: Solo Superadmin --}}
+                    @if(auth()->user()->isSuperAdmin())
+                        <x-nav-link :href="route('admin.home.edit')" :active="request()->routeIs('admin.home.*')">
+                            {{ __('Administrar Inicio') }}
+                        </x-nav-link>
+                    @endif
+
+                    {{-- Gestión de Productos: Superadmin y Administrador --}}
+                    @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
+                        <x-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
+                            {{ __('Categorías Prod.') }}
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('productos.admin.index')"
+                            :active="request()->routeIs('productos.admin.*')">
+                            {{ __('Productos') }}
+                        </x-nav-link>
+                    @endif
+
+                    @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
                         <x-nav-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.*')">
                             {{ __('Usuarios') }}
                         </x-nav-link>
@@ -109,27 +123,38 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
+            {{-- Clientes y Mapa: Para todos --}}
+            <x-responsive-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
+                {{ __('Clientes') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('mapa.clientes')" :active="request()->routeIs('mapa.*')">
+                🗺️ {{ __('Mapa') }}
+            </x-responsive-nav-link>
+
+            {{-- Testimonios y Promociones: Solo Superadmin y Administrador --}}
             @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
-                <x-responsive-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
-                    {{ __('Clientes') }}
-                </x-responsive-nav-link>
-
-                <x-responsive-nav-link :href="route('mapa.clientes')" :active="request()->routeIs('mapa.*')">
-                    🗺️ {{ __('Mapa') }}
-                </x-responsive-nav-link>
-            @endif
-
-            @if(auth()->user()->isSuperAdmin())
                 <x-responsive-nav-link :href="route('testimonios.index')" :active="request()->routeIs('testimonios.*')">
                     {{ __('Testimonios') }}
                 </x-responsive-nav-link>
-            @endif
 
-            @if(auth()->user()->isSuperAdmin())
                 <x-responsive-nav-link :href="route('promociones.index')" :active="request()->routeIs('promociones.*')">
                     {{ __('Promociones') }}
                 </x-responsive-nav-link>
+            @endif
 
+            {{-- Categorías y Productos: Superadmin y Administrador --}}
+            @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
+                <x-responsive-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
+                    {{ __('Categorías Prod.') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('productos.admin.index')"
+                    :active="request()->routeIs('productos.admin.*')">
+                    {{ __('Productos') }}
+                </x-responsive-nav-link>
+            @endif
+            @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
                 <x-responsive-nav-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.*')">
                     {{ __('Usuarios') }}
                 </x-responsive-nav-link>

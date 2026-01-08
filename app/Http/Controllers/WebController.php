@@ -6,6 +6,9 @@ use App\Models\Testimonio;
 use App\Models\Promocion;
 use Illuminate\Http\Request;
 
+use App\Models\Producto;
+use App\Models\ProductoCategoria;
+
 class WebController extends Controller
 {
     /**
@@ -66,18 +69,25 @@ class WebController extends Controller
      */
     public function productos(Request $request)
     {
-        $categoria = $request->get('categoria', 'todas');
+        $categoriaSlug = $request->get('categoria', 'todas');
 
-        $categoriasValidas = [
-            'shampoos',
-            'acondicionadores',
-            'cremas',
-            'tratamientos',
-            'linea-natural',
-            'linea-infantil'
-        ];
+        // Obtener categorías activas para la navegación
+        $categorias = ProductoCategoria::active()->get();
+        $categoriasValidas = $categorias->pluck('slug')->toArray();
 
-        return view('web.productos', compact('categoria', 'categoriasValidas'));
+        // Obtener productos filtrados o todos
+        $query = Producto::active()->with('categoria');
+
+        if ($categoriaSlug !== 'todas' && in_array($categoriaSlug, $categoriasValidas)) {
+            $query->whereHas('categoria', function ($q) use ($categoriaSlug) {
+                $q->where('slug', $categoriaSlug);
+            });
+        }
+
+        $productos = $query->latest()->get();
+        $categoria = $categoriaSlug;
+
+        return view('web.productos', compact('categoria', 'categorias', 'productos'));
     }
 
     /**
