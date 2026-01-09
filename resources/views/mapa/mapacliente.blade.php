@@ -5,7 +5,8 @@
                 {{ isset($clienteEspecifico) ? 'Ruta al Cliente' : 'Mapa de Clientes' }}
             </h2>
             <div class="space-x-2">
-                <a href="{{ route('clientes.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('clientes.index') }}"
+                    class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                     Ver Lista
                 </a>
             </div>
@@ -14,382 +15,686 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Panel de control -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4">
+            <div class="bg-white shadow-sm sm:rounded-lg">
                 <div class="p-4">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Clientes en el mapa</label>
-                            <select id="cliente-selector" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="">Seleccionar cliente...</option>
-                                @foreach($clientes as $cliente)
-                                    <option value="{{ $cliente['id'] }}">{{ $cliente['nombre'] }} - {{ $cliente['direccion']['zona'] ?? 'Sin zona' }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- Panel Lateral de Clientes -->
+                        <div class="md:col-span-1 flex flex-col">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Buscar Clientes</label>
+                                <input type="text" id="search-input" placeholder="Nombre, zona o teléfono..."
+                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 mb-3">
 
-                        <div class="flex items-end">
-                            <button id="btn-mi-ubicacion" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                📍 Mi Ubicación
-                            </button>
-                        </div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Filtrar por Zona
+                                    (Carpetas)</label>
+                                <select id="zone-filter"
+                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="">Todas las Zonas</option>
+                                    <!-- Las zonas se cargarán por JS -->
+                                </select>
+                            </div>
 
-                        <div class="flex items-end">
-                            <button id="btn-calcular-ruta" class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" disabled>
-                                🗺️ Calcular Ruta
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="ruta-info" class="mt-4 hidden">
-                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
-                            <div class="flex">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                                    </svg>
+                            <div class="flex-1 overflow-y-auto border rounded-md bg-gray-50 mb-4" id="clientes-list">
+                                <!-- Lista de clientes se renderiza aquí -->
+                                <div class="flex justify-center items-center h-full text-gray-500">
+                                    Cargando clientes...
                                 </div>
-                                <div class="ml-3">
-                                    <p class="text-sm text-blue-700">
-                                        <strong>Distancia:</strong> <span id="distancia-texto">-</span> |
-                                        <strong>Tiempo:</strong> <span id="tiempo-texto">-</span>
-                                    </p>
+                            </div>
+
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center text-sm text-gray-600 mb-2">
+                                    <span id="selected-count">0 seleccionados</span>
+                                    <button
+                                        onclick="selectedClientIds.clear(); renderClientList(); updateMapMarkers(); updateUI();"
+                                        class="text-red-500 hover:text-red-700 text-xs">
+                                        Limpiar selección
+                                    </button>
+                                </div>
+
+                                <button id="btn-mi-ubicacion"
+                                    class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                        </path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    Mi Ubicación
+                                </button>
+
+                                <button id="btn-calcular-ruta"
+                                    class="w-full bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded flex items-center justify-center gap-2 opacity-50 cursor-not-allowed"
+                                    disabled>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0121 18.382V7.618a1 1 0 01-.447-.894L15 7m0 13V7">
+                                        </path>
+                                    </svg>
+                                    Calcular Ruta
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Mapa -->
+                        <div class="md:col-span-3 relative h-[600px] md:h-[800px]" id="map-container">
+                            <div id="map" class="w-full h-full rounded-lg shadow-inner"></div>
+
+                            <!-- Info de Ruta Flotante -->
+                            <div id="ruta-info"
+                                class="absolute top-4 left-4 z-10 hidden bg-white p-4 rounded-lg shadow-lg max-w-sm border-l-4 border-blue-500">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-6 w-6 text-blue-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-blue-800">Ruta Calculada</h3>
+                                        <div class="mt-1 text-sm text-gray-700">
+                                            <p><strong>Distancia:</strong> <span id="distancia-texto">-</span></p>
+                                            <p><strong>Tiempo est.:</strong> <span id="tiempo-texto">-</span></p>
+                                        </div>
+                                    </div>
+                                    <button onclick="document.getElementById('ruta-info').classList.add('hidden')"
+                                        class="ml-auto text-gray-400 hover:text-gray-600">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Contenedor del mapa -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div id="map" class="w-full h-[600px] md:h-[700px]"></div>
-            </div>
         </div>
     </div>
 
     @push('scripts')
-    <!-- Mapbox GL JS -->
-    <link href='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css' rel='stylesheet' />
-    <script src='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js'></script>
+        <!-- Mapbox GL JS -->
+        <link href='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css' rel='stylesheet' />
+        <script src='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js'></script>
 
-    <script>
-        // Configuración de Mapbox
-        mapboxgl.accessToken = '{{ $mapboxToken }}';
+        <script>
+            // Configuración de Mapbox
+            mapboxgl.accessToken = '{{ $mapboxToken }}';
 
-        // Datos de clientes
-        const clientes = @json($clientes);
-        const clienteEspecifico = {{ isset($clienteEspecifico) ? 'true' : 'false' }};
+            // Datos de clientes
+            const allClientes = @json($clientes);
+            let filteredClientes = [...allClientes];
+            const clienteEspecifico = {{ isset($clienteEspecifico) ? 'true' : 'false' }};
 
-        // Variables globales
-        let map;
-        let userLocation = null;
-        let selectedClientId = null;
-        let currentRoute = null;
-        let markers = [];
+            // Variables globales
+            let map;
+            let userLocation = null;
+            let selectedClientIds = new Set();
+            let currentRoute = null;
+            let markers = [];
+            let userMarker = null;
+            let allZonas = [];
+            let activeZoneId = '';
 
-        // Inicializar mapa
-        function initMap() {
-            map = new mapboxgl.Map({
-                container: 'map',
-                style: 'mapbox://styles/mapbox/streets-v12',
-                center: [-68.1193, -16.5000], // La Paz, Bolivia
-                zoom: 12
-            });
-
-            // Agregar controles de navegación
-            map.addControl(new mapboxgl.NavigationControl());
-
-            // Agregar control de geolocalización
-            const geolocateControl = new mapboxgl.GeolocateControl({
-                positionOptions: {
-                    enableHighAccuracy: true
-                },
-                trackUserLocation: true,
-                showUserHeading: true
-            });
-
-            map.addControl(geolocateControl);
-
-            // Esperar a que el mapa cargue
-            map.on('load', function() {
-                // Si es cliente específico, seleccionarlo automáticamente
-                if (clienteEspecifico && clientes.length > 0) {
-                    selectedClientId = clientes[0].id;
-                    document.getElementById('cliente-selector').value = selectedClientId;
-                }
-
-                // Agregar marcadores de clientes
-                addClientMarkers();
-
-                // Ajustar vista a todos los clientes
-                if (clientes.length > 0) {
-                    fitBoundsToClients();
-                }
-            });
-
-            // Activar geolocalización automáticamente
-            geolocateControl.on('geolocate', function(e) {
-                userLocation = [e.coords.longitude, e.coords.latitude];
-                document.getElementById('btn-calcular-ruta').disabled = !selectedClientId;
-            });
-        }
-
-        // Agregar marcadores de clientes
-        function addClientMarkers() {
-            clientes.forEach(cliente => {
-                const coords = getClientCoordinates(cliente);
-                if (!coords) return;
-
-                // Crear elemento HTML personalizado para el marcador
-                const el = document.createElement('div');
-                el.className = 'custom-marker';
-                el.innerHTML = `
-                    <div class="w-10 h-10 bg-red-500 rounded-full border-4 border-white shadow-lg flex items-center justify-center cursor-pointer hover:bg-red-600 transition">
-                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
-                `;
-
-                // Crear popup con información del cliente
-                const popupContent = createClientPopup(cliente);
-
-                const popup = new mapboxgl.Popup({
-                    offset: 25,
-                    maxWidth: '300px'
-                }).setHTML(popupContent);
-
-                // Crear marcador
-                const marker = new mapboxgl.Marker(el)
-                    .setLngLat(coords)
-                    .setPopup(popup)
-                    .addTo(map);
-
-                markers.push({ id: cliente.id, marker });
-
-                // Click en el marcador
-                el.addEventListener('click', () => {
-                    selectedClientId = cliente.id;
-                    document.getElementById('cliente-selector').value = cliente.id;
-                    document.getElementById('btn-calcular-ruta').disabled = !userLocation;
-                });
-            });
-        }
-
-        // Crear contenido del popup
-        function createClientPopup(cliente) {
-            let fotosHtml = '';
-            if (cliente.fotos && cliente.fotos.length > 0) {
-                fotosHtml = `
-                    <div class="mt-2 grid grid-cols-2 gap-2">
-                        ${cliente.fotos.slice(0, 4).map(foto => `
-                            <img src="${foto.url}" alt="${foto.descripcion}"
-                                 class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75"
-                                 onclick="window.open('${foto.url}', '_blank')">
-                        `).join('')}
-                    </div>
-                `;
-            }
-
-            return `
-                <div class="p-2">
-                    <h3 class="font-bold text-lg text-gray-900">${cliente.nombre}</h3>
-                    <p class="text-sm text-gray-600 mt-1">
-                        <strong>📍</strong> ${cliente.direccion?.completa || 'Sin dirección'}
-                    </p>
-                    ${cliente.telefono ? `
-                        <p class="text-sm text-gray-600 mt-1">
-                            <strong>📞</strong> ${cliente.telefono}
-                        </p>
-                    ` : ''}
-                    ${cliente.direccion?.referencia ? `
-                        <p class="text-sm text-gray-600 mt-1">
-                            <strong>ℹ️</strong> ${cliente.direccion.referencia}
-                        </p>
-                    ` : ''}
-                    ${fotosHtml}
-                    <div class="mt-2">
-                        <a href="/clientes/${cliente.id}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                            Ver detalles →
-                        </a>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Obtener coordenadas del cliente
-        function getClientCoordinates(cliente) {
-            if (cliente.direccion?.coordenadas) {
-                const coords = cliente.direccion.coordenadas.split(',').map(c => parseFloat(c.trim()));
-                if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
-                    return [coords[1], coords[0]]; // [lng, lat]
+            // Cargar Zonas desde la API
+            async function loadZonas() {
+                try {
+                    const response = await fetch('{{ route('api.zonas.index') }}');
+                    allZonas = await response.json();
+                    renderZoneFilter();
+                } catch (error) {
+                    console.error('Error al cargar zonas:', error);
                 }
             }
-            return null;
-        }
 
-        // Ajustar vista a todos los clientes
-        function fitBoundsToClients() {
-            const bounds = new mapboxgl.LngLatBounds();
-
-            clientes.forEach(cliente => {
-                const coords = getClientCoordinates(cliente);
-                if (coords) {
-                    bounds.extend(coords);
-                }
-            });
-
-            if (!bounds.isEmpty()) {
-                map.fitBounds(bounds, {
-                    padding: 50,
-                    maxZoom: 15
+            function renderZoneFilter() {
+                const select = document.getElementById('zone-filter');
+                allZonas.forEach(zona => {
+                    const option = document.createElement('option');
+                    option.value = zona.id;
+                    option.textContent = zona.nombre + ' (' + zona.clientes.length + ')';
+                    select.appendChild(option);
                 });
             }
-        }
 
-        // Calcular ruta
-        async function calculateRoute() {
-            if (!userLocation || !selectedClientId) {
-                alert('Por favor, activa tu ubicación y selecciona un cliente');
-                return;
+            // Inicializar mapa
+            function initMap() {
+                map = new mapboxgl.Map({
+                    container: 'map',
+                    style: 'mapbox://styles/mapbox/streets-v12',
+                    center: [-68.1193, -16.5000], // La Paz, Bolivia
+                    zoom: 12
+                });
+
+                // Agregar controles de navegación
+                map.addControl(new mapboxgl.NavigationControl());
+
+                // Agregar control de geolocalización
+                const geolocateControl = new mapboxgl.GeolocateControl({
+                    positionOptions: {
+                        enableHighAccuracy: true
+                    },
+                    trackUserLocation: true,
+                    showUserHeading: true
+                });
+
+                map.addControl(geolocateControl);
+
+                // Esperar a que el mapa cargue
+                map.on('load', function () {
+                    // Si es cliente específico, seleccionarlo automáticamente
+                    if (clienteEspecifico && allClientes.length > 0) {
+                        const id = allClientes[0].id;
+                        selectedClientIds.add(id);
+                        renderClientList(); // Renderizar lista para mostrar selección
+                        focusOnClient(id);
+                    }
+
+                    // Renderizar lista inicial
+                    renderClientList();
+
+                    // Agregar marcadores de clientes
+                    updateMapMarkers();
+
+                    // Ajustar vista a todos los clientes
+                    if (allClientes.length > 0) {
+                        fitBoundsToClients(allClientes);
+                    }
+                });
+
+                // Activar geolocalización automáticamente
+                geolocateControl.on('geolocate', function (e) {
+                    userLocation = [e.coords.longitude, e.coords.latitude];
+                    updateUI();
+                });
             }
 
-            const cliente = clientes.find(c => c.id === selectedClientId);
-            const clientCoords = getClientCoordinates(cliente);
+            // Filtrar clientes
+            function filterClients() {
+                const searchTerm = document.getElementById('search-input').value.toLowerCase();
+                const zoneId = document.getElementById('zone-filter').value;
+                activeZoneId = zoneId;
 
-            if (!clientCoords) {
-                alert('El cliente no tiene coordenadas válidas');
-                return;
+                filteredClientes = allClientes.filter(cliente => {
+                    // Filtro por término de búsqueda
+                    const nombre = cliente.nombre ? cliente.nombre.toLowerCase() : '';
+                    const zona = cliente.direccion?.zona ? cliente.direccion.zona.toLowerCase() : '';
+                    const telefono = cliente.telefono ? cliente.telefono.toLowerCase() : '';
+                    const matchesSearch = nombre.includes(searchTerm) || zona.includes(searchTerm) || telefono.includes(searchTerm);
+
+                    // Filtro por zona (JSON)
+                    let matchesZone = true;
+                    if (zoneId) {
+                        const selectedZone = allZonas.find(z => z.id === zoneId);
+                        matchesZone = selectedZone && selectedZone.clientes.includes(cliente.id);
+                    }
+
+                    return matchesSearch && matchesZone;
+                });
+
+                renderClientList();
+                updateMapMarkers();
             }
 
-            // Limpiar ruta anterior
-            if (currentRoute && map.getLayer('route')) {
-                map.removeLayer('route');
-                map.removeSource('route');
-            }
+            // Renderizar lista de clientes
+            function renderClientList() {
+                const container = document.getElementById('clientes-list');
+                container.innerHTML = '';
 
-            // Solicitar ruta a Mapbox Directions API
-            const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${userLocation[0]},${userLocation[1]};${clientCoords[0]},${clientCoords[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.routes && data.routes.length > 0) {
-                    const route = data.routes[0];
-
-                    // Agregar ruta al mapa
-                    map.addSource('route', {
-                        type: 'geojson',
-                        data: {
-                            type: 'Feature',
-                            properties: {},
-                            geometry: route.geometry
-                        }
-                    });
-
-                    map.addLayer({
-                        id: 'route',
-                        type: 'line',
-                        source: 'route',
-                        layout: {
-                            'line-join': 'round',
-                            'line-cap': 'round'
-                        },
-                        paint: {
-                            'line-color': '#3b82f6',
-                            'line-width': 5,
-                            'line-opacity': 0.75
-                        }
-                    });
-
-                    // Ajustar vista a la ruta
-                    const bounds = new mapboxgl.LngLatBounds();
-                    bounds.extend(userLocation);
-                    bounds.extend(clientCoords);
-                    map.fitBounds(bounds, { padding: 100 });
-
-                    // Mostrar información de la ruta
-                    const distancia = (route.distance / 1000).toFixed(2);
-                    const tiempo = Math.round(route.duration / 60);
-
-                    document.getElementById('distancia-texto').textContent = `${distancia} km`;
-                    document.getElementById('tiempo-texto').textContent = `${tiempo} min`;
-                    document.getElementById('ruta-info').classList.remove('hidden');
-
-                    currentRoute = route;
+                if (filteredClientes.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center py-4">No se encontraron clientes</p>';
+                    return;
                 }
-            } catch (error) {
-                console.error('Error al calcular ruta:', error);
-                alert('Error al calcular la ruta');
+
+                filteredClientes.forEach(cliente => {
+                    const isSelected = selectedClientIds.has(cliente.id);
+
+                    const item = document.createElement('div');
+                    item.className = `p-3 border-b hover:bg-gray-50 cursor-pointer flex items-start space-x-3 ${isSelected ? 'bg-blue-50' : ''}`;
+                    item.onclick = (e) => {
+                        // Evitar doble disparo si se hace click en el checkbox
+                        if (e.target.type !== 'checkbox') {
+                            toggleClientSelection(cliente.id);
+                        }
+                    };
+
+                    item.innerHTML = `
+                                                                                                                    <div class="flex items-center h-5 mt-1">
+                                                                                                                        <input type="checkbox" 
+                                                                                                                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                                                                                                               ${isSelected ? 'checked' : ''}
+                                                                                                                               onchange="toggleClientSelection(${cliente.id})">
+                                                                                                                    </div>
+                                                                                                                    <div class="flex-1 min-w-0">
+                                                                                                                        <p class="text-sm font-medium text-gray-900 truncate">
+                                                                                                                            ${cliente.nombre}
+                                                                                                                        </p>
+                                                                                                                        <p class="text-xs text-gray-500 truncate">
+                                                                                                                            ${cliente.direccion?.zona || 'Sin zona'}
+                                                                                                                        </p>
+                                                                                                                        ${cliente.telefono ? `<p class="text-xs text-gray-400">${cliente.telefono}</p>` : ''}
+                                                                                                                    </div>
+                                                                                                                `;
+
+                    container.appendChild(item);
+                });
+
+                updateUI();
             }
-        }
 
-        // Event Listeners
-        document.getElementById('cliente-selector').addEventListener('change', function(e) {
-            selectedClientId = e.target.value ? parseInt(e.target.value) : null;
-            document.getElementById('btn-calcular-ruta').disabled = !userLocation || !selectedClientId;
+            // Toggle selección de cliente
+            function toggleClientSelection(id) {
+                if (selectedClientIds.has(id)) {
+                    selectedClientIds.delete(id);
+                    closeClientPopup(id);
+                } else {
+                    if (selectedClientIds.size >= 24) {
+                        alert('Máximo 24 clientes permitidos para la ruta');
+                        return;
+                    }
+                    selectedClientIds.add(id);
+                    focusOnClient(id);
+                }
 
-            // Centrar en el cliente seleccionado
-            if (selectedClientId) {
-                const cliente = clientes.find(c => c.id === selectedClientId);
-                const coords = getClientCoordinates(cliente);
+                renderClientList();
+                updateMarkerStyles(); // Actualizar solo estilos visuales
+                updateUI();
+            }
+
+            // Actualizar marcadores en el mapa
+            function updateMapMarkers() {
+                // Limpiar marcadores existentes
+                markers.forEach(m => m.marker.remove());
+                markers = [];
+
+                // Combinamos los clientes filtrados con los ya seleccionados para que no desaparezcan del mapa
+                const selectedClientes = allClientes.filter(c => selectedClientIds.has(c.id));
+                const clientsToRender = [...new Map([...filteredClientes, ...selectedClientes].map(item => [item.id, item])).values()];
+
+                clientsToRender.forEach(cliente => {
+                    const coords = getClientCoordinates(cliente);
+                    if (!coords) return;
+
+                    // Crear elemento HTML personalizado para el marcador
+                    const el = document.createElement('div');
+                    el.className = 'custom-marker';
+
+                    // Renderizar contenido visual del marcador
+                    updateMarkerElement(el, selectedClientIds.has(cliente.id));
+
+                    // Crear popup con información del cliente
+                    const popupContent = createClientPopup(cliente);
+                    const popup = new mapboxgl.Popup({
+                        offset: 25,
+                        maxWidth: '300px'
+                    }).setHTML(popupContent);
+
+                    // Crear marcador
+                    const marker = new mapboxgl.Marker(el)
+                        .setLngLat(coords)
+                        .setPopup(popup)
+                        .addTo(map);
+
+                    markers.push({ id: cliente.id, marker, element: el });
+
+                    // Click en el marcador
+                    el.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleClientSelection(cliente.id);
+                    });
+                });
+            }
+
+            // Centrar mapa en cliente y abrir popup
+            function focusOnClient(id) {
+                const client = allClientes.find(c => c.id === id);
+                if (!client) return;
+
+                const coords = getClientCoordinates(client);
                 if (coords) {
                     map.flyTo({
                         center: coords,
                         zoom: 15
                     });
 
-                    // Abrir popup del cliente
-                    const markerData = markers.find(m => m.id === selectedClientId);
-                    if (markerData) {
-                        markerData.marker.togglePopup();
+                    // Buscar el marcador y asegurar que el popup esté abierto
+                    const markerObj = markers.find(m => m.id === id);
+                    if (markerObj && markerObj.marker.getPopup() && !markerObj.marker.getPopup().isOpen()) {
+                        markerObj.marker.togglePopup();
                     }
                 }
             }
-        });
 
-        document.getElementById('btn-mi-ubicacion').addEventListener('click', function() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        userLocation = [position.coords.longitude, position.coords.latitude];
+            // Cerrar popup del cliente
+            function closeClientPopup(id) {
+                const markerObj = markers.find(m => m.id === id);
+                if (markerObj && markerObj.marker.getPopup() && markerObj.marker.getPopup().isOpen()) {
+                    markerObj.marker.togglePopup();
+                }
+            }
 
-                        map.flyTo({
-                            center: userLocation,
-                            zoom: 15
+            // Actualizar solo el estilo visual de los marcadores existentes
+            function updateMarkerStyles() {
+                markers.forEach(m => {
+                    const isSelected = selectedClientIds.has(m.id);
+                    updateMarkerElement(m.element, isSelected);
+                });
+            }
+
+            // Helper para renderizar el HTML del marcador
+            function updateMarkerElement(element, isSelected) {
+                const bgColor = isSelected ? 'bg-green-500' : 'bg-red-500';
+                const hoverColor = isSelected ? 'hover:bg-green-600' : 'hover:bg-red-600';
+
+                element.innerHTML = `
+                                                                                                        <div class="w-8 h-8 ${bgColor} rounded-full border-2 border-white shadow-lg flex items-center justify-center cursor-pointer ${hoverColor} transition transform hover:scale-110">
+                                                                                                            <span class="text-white text-xs font-bold">${isSelected ? '✓' : ''}</span>
+                                                                                                        </div>
+                                                                                                    `;
+            }
+
+
+            // Crear contenido del popup
+            function createClientPopup(cliente) {
+                let fotosHtml = '';
+                if (cliente.fotos && cliente.fotos.length > 0) {
+                    fotosHtml = `
+                                                                                                                    <div class="mt-2 grid grid-cols-2 gap-2">
+                                                                                                                        ${cliente.fotos.slice(0, 4).map(foto => `
+                                                                                                                            <img src="${foto.url}" alt="${foto.descripcion}"
+                                                                                                                                 class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75"
+                                                                                                                                 onclick="window.open('${foto.url}', '_blank')">
+                                                                                                                        `).join('')}
+                                                                                                                    </div>
+                                                                                                                `;
+                }
+
+                return `
+                                                                                                                <div class="p-2">
+                                                                                                                    <h3 class="font-bold text-lg text-gray-900">${cliente.nombre}</h3>
+                                                                                                                    <p class="text-sm text-gray-600 mt-1">
+                                                                                                                        <strong>📍</strong> ${cliente.direccion?.completa || 'Sin dirección'}
+                                                                                                                    </p>
+                                                                                                                    ${cliente.telefono ? `
+                                                                                                                        <p class="text-sm text-gray-600 mt-1">
+                                                                                                                            <strong>📞</strong> ${cliente.telefono}
+                                                                                                                        </p>
+                                                                                                                    ` : ''}
+                                                                                                                    ${cliente.direccion?.referencia ? `
+                                                                                                                        <p class="text-sm text-gray-600 mt-1">
+                                                                                                                            <strong>ℹ️</strong> ${cliente.direccion.referencia}
+                                                                                                                        </p>
+                                                                                                                    ` : ''}
+                                                                                                                    ${fotosHtml}
+                                                                                                                    <div class="mt-2">
+                                                                                                                        <a href="/clientes/${cliente.id}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                                                                                                            Ver detalles →
+                                                                                                                        </a>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            `;
+            }
+
+            // Obtener coordenadas del cliente
+            function getClientCoordinates(cliente) {
+                if (cliente.direccion?.coordenadas) {
+                    const coords = cliente.direccion.coordenadas.split(',').map(c => parseFloat(c.trim()));
+                    if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+                        return [coords[1], coords[0]]; // [lng, lat]
+                    }
+                }
+                return null;
+            }
+
+            // Ajustar vista a clientes
+            function fitBoundsToClients(clientsToFit) {
+                const bounds = new mapboxgl.LngLatBounds();
+                let hasValidCoords = false;
+
+                clientsToFit.forEach(cliente => {
+                    const coords = getClientCoordinates(cliente);
+                    if (coords) {
+                        bounds.extend(coords);
+                        hasValidCoords = true;
+                    }
+                });
+
+                if (hasValidCoords) {
+                    map.fitBounds(bounds, {
+                        padding: 50,
+                        maxZoom: 15
+                    });
+                }
+            }
+
+            // Actualizar UI (botones, contadores)
+            function updateUI() {
+                const count = selectedClientIds.size;
+                document.getElementById('selected-count').textContent = `${count} seleccionado${count !== 1 ? 's' : ''}`;
+
+                const btnCalcular = document.getElementById('btn-calcular-ruta');
+                if (userLocation && count > 0) {
+                    btnCalcular.disabled = false;
+                    btnCalcular.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    btnCalcular.disabled = true;
+                    btnCalcular.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+
+            // Calcular distancia entre dos coordenadas (Haversine simple o Euclídea para distancias cortas)
+            function calculateDistance(coord1, coord2) {
+                const R = 6371e3; // Radio de la tierra en metros
+                const φ1 = coord1[1] * Math.PI / 180;
+                const φ2 = coord2[1] * Math.PI / 180;
+                const Δφ = (coord2[1] - coord1[1]) * Math.PI / 180;
+                const Δλ = (coord2[0] - coord1[0]) * Math.PI / 180;
+
+                const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+                    Math.cos(φ1) * Math.cos(φ2) *
+                    Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+                return R * c;
+            }
+
+            // Ordenar clientes por vecino más cercano (Nearest Neighbor)
+            function sortClientsByDistance(startCoord, clients) {
+                const sorted = [];
+                let currentCoord = startCoord;
+                const remaining = [...clients];
+
+                while (remaining.length > 0) {
+                    let nearestIndex = -1;
+                    let minDistance = Infinity;
+
+                    for (let i = 0; i < remaining.length; i++) {
+                        const dist = calculateDistance(currentCoord, remaining[i].coords);
+                        if (dist < minDistance) {
+                            minDistance = dist;
+                            nearestIndex = i;
+                        }
+                    }
+
+                    if (nearestIndex !== -1) {
+                        const nearest = remaining.splice(nearestIndex, 1)[0];
+                        sorted.push(nearest);
+                        currentCoord = nearest.coords;
+                    }
+                }
+
+                return sorted;
+            }
+
+            // Calcular ruta optimizada (Usando Directions API + Nearest Neighbor)
+            async function calculateRoute() {
+                if (!userLocation || selectedClientIds.size === 0) {
+                    alert('Por favor, activa tu ubicación y selecciona al menos un cliente');
+                    return;
+                }
+
+                // Obtener clientes seleccionados
+                const selectedClients = allClientes.filter(c => selectedClientIds.has(c.id));
+
+                // Verificar coordenadas válidas
+                const validClients = [];
+                selectedClients.forEach(client => {
+                    const coords = getClientCoordinates(client);
+                    if (coords) {
+                        validClients.push({ ...client, coords });
+                    }
+                });
+
+                if (validClients.length === 0) {
+                    alert('Ninguno de los clientes seleccionados tiene coordenadas válidas');
+                    return;
+                }
+
+                // Ordenar clientes para ruta eficiente (Nearest Neighbor)
+                const sortedClients = sortClientsByDistance(userLocation, validClients);
+
+                // Construir lista de coordenadas: Inicio (Usuario) -> Clientes Ordenados
+                const coordinates = [userLocation];
+                sortedClients.forEach(client => {
+                    coordinates.push(client.coords);
+                });
+
+                // Construir string de coordenadas para la API
+                const coordinatesString = coordinates.map(c => `${c[0]},${c[1]}`).join(';');
+
+                // Limpiar ruta anterior
+                if (currentRoute) {
+                    if (map.getLayer('route')) map.removeLayer('route');
+                    if (map.getSource('route')) map.removeSource('route');
+                }
+
+                // Solicitar ruta a Mapbox Directions API (Soporta hasta 25 coordenadas)
+                const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coordinatesString}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
+
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    if (data.code !== 'Ok') {
+                        throw new Error(data.message || 'Error al calcular ruta');
+                    }
+
+                    if (data.routes && data.routes.length > 0) {
+                        const route = data.routes[0];
+
+                        // Agregar ruta al mapa
+                        map.addSource('route', {
+                            type: 'geojson',
+                            data: {
+                                type: 'Feature',
+                                properties: {},
+                                geometry: route.geometry
+                            }
                         });
 
-                        // Agregar marcador de usuario si no existe
-                        if (!document.getElementById('user-marker')) {
-                            const el = document.createElement('div');
-                            el.id = 'user-marker';
-                            el.className = 'w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg';
+                        map.addLayer({
+                            id: 'route',
+                            type: 'line',
+                            source: 'route',
+                            layout: {
+                                'line-join': 'round',
+                                'line-cap': 'round'
+                            },
+                            paint: {
+                                'line-color': '#3b82f6',
+                                'line-width': 5,
+                                'line-opacity': 0.75
+                            }
+                        });
 
-                            new mapboxgl.Marker(el)
-                                .setLngLat(userLocation)
-                                .addTo(map);
-                        }
+                        // Ajustar vista a la ruta
+                        const bounds = new mapboxgl.LngLatBounds();
+                        coordinates.forEach(coord => bounds.extend(coord));
+                        map.fitBounds(bounds, { padding: 50 });
 
-                        document.getElementById('btn-calcular-ruta').disabled = !selectedClientId;
-                    },
-                    (error) => {
-                        alert('No se pudo obtener tu ubicación: ' + error.message);
-                    },
-                    {
-                        enableHighAccuracy: true
+                        // Mostrar información de la ruta
+                        const distancia = (route.distance / 1000).toFixed(2);
+                        const tiempo = Math.round(route.duration / 60);
+
+                        document.getElementById('distancia-texto').textContent = `${distancia} km`;
+                        document.getElementById('tiempo-texto').textContent = `${tiempo} min`;
+                        document.getElementById('ruta-info').classList.remove('hidden');
+
+                        currentRoute = route;
                     }
-                );
-            } else {
-                alert('Tu navegador no soporta geolocalización');
+                } catch (error) {
+                    console.error('Error al calcular ruta:', error);
+                    alert('Error al calcular la ruta: ' + error.message);
+                }
             }
-        });
 
-        document.getElementById('btn-calcular-ruta').addEventListener('click', calculateRoute);
+            // Event Listeners
+            document.getElementById('search-input').addEventListener('input', filterClients);
+            document.getElementById('zone-filter').addEventListener('change', filterClients);
 
-        // Inicializar mapa cuando cargue el DOM
-        document.addEventListener('DOMContentLoaded', initMap);
-    </script>
+            document.getElementById('btn-mi-ubicacion').addEventListener('click', function () {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            userLocation = [position.coords.longitude, position.coords.latitude];
+
+                            map.flyTo({
+                                center: userLocation,
+                                zoom: 15
+                            });
+
+                            // Agregar/Actualizar marcador de usuario
+                            if (!userMarker) {
+                                const el = document.createElement('div');
+                                el.className = 'w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg pulse-animation';
+
+                                // Añadir estilo de pulso si no existe
+                                if (!document.getElementById('pulse-style')) {
+                                    const style = document.createElement('style');
+                                    style.id = 'pulse-style';
+                                    style.innerHTML = `
+                                                                                                                                    @keyframes pulse {
+                                                                                                                                        0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+                                                                                                                                        70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+                                                                                                                                        100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+                                                                                                                                    }
+                                                                                                                                    .pulse-animation {
+                                                                                                                                        animation: pulse 2s infinite;
+                                                                                                                                    }
+                                                                                                                                `;
+                                    document.head.appendChild(style);
+                                }
+
+                                userMarker = new mapboxgl.Marker(el)
+                                    .setLngLat(userLocation)
+                                    .addTo(map);
+                            } else {
+                                userMarker.setLngLat(userLocation);
+                            }
+
+                            updateUI();
+                        },
+                        (error) => {
+                            alert('No se pudo obtener tu ubicación: ' + error.message);
+                        },
+                        {
+                            enableHighAccuracy: true
+                        }
+                    );
+                } else {
+                    alert('Tu navegador no soporta geolocalización');
+                }
+            });
+
+            document.getElementById('btn-calcular-ruta').addEventListener('click', calculateRoute);
+
+            // Inicializar mapa cuando cargue el DOM
+            document.addEventListener('DOMContentLoaded', () => {
+                initMap();
+                loadZonas();
+            });
+        </script>
     @endpush
 </x-app-layout>

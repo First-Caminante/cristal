@@ -7,7 +7,7 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rules;
 
 class UsuarioController extends Controller
 {
@@ -74,13 +74,13 @@ class UsuarioController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
-            'correo' => 'required|email|max:100|unique:usuarios,correo',
-            'telefono' => 'nullable|string|max:20',
-            'password' => ['required', 'confirmed', Password::defaults()],
-            'rol_id' => 'required|exists:roles,id',
-            'estado' => 'required|boolean',
+            'nombre' => ['required', 'string', 'max:100'],
+            'apellido' => ['required', 'string', 'max:100'],
+            'correo' => ['required', 'string', 'lowercase', 'email', 'max:100', 'unique:' . User::class],
+            'telefono' => ['nullable', 'string', 'max:20'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'rol_id' => ['required', 'exists:roles,id'],
+            'estado' => ['required', 'boolean'],
         ]);
 
         try {
@@ -126,13 +126,13 @@ class UsuarioController extends Controller
     public function update(Request $request, User $usuario)
     {
         $request->validate([
-            'nombre' => 'required|string|max:100',
-            'apellido' => 'required|string|max:100',
-            'correo' => 'required|email|max:100|unique:usuarios,correo,' . $usuario->id,
-            'telefono' => 'nullable|string|max:20',
-            'password' => ['nullable', 'confirmed', Password::defaults()],
-            'rol_id' => 'required|exists:roles,id',
-            'estado' => 'required|boolean',
+            'nombre' => ['required', 'string', 'max:100'],
+            'apellido' => ['required', 'string', 'max:100'],
+            'correo' => ['required', 'string', 'lowercase', 'email', 'max:100', 'unique:usuarios,correo,' . $usuario->id],
+            'telefono' => ['nullable', 'string', 'max:20'],
+            'rol_id' => ['required', 'exists:roles,id'],
+            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'estado' => ['required', 'boolean'],
         ]);
 
         try {
@@ -145,7 +145,6 @@ class UsuarioController extends Controller
                 'estado' => $request->estado,
             ];
 
-            // Solo actualizar password si se proporcionó uno nuevo
             if ($request->filled('password')) {
                 $data['password'] = Hash::make($request->password);
             }
@@ -165,9 +164,8 @@ class UsuarioController extends Controller
      */
     public function destroy(User $usuario)
     {
-        // Prevenir que el superadmin se elimine a sí mismo
         if ($usuario->id === auth()->id()) {
-            return back()->with('error', 'No puedes eliminarte a ti mismo.');
+            return back()->with('error', 'No puedes eliminar tu propio usuario.');
         }
 
         try {
@@ -185,7 +183,6 @@ class UsuarioController extends Controller
      */
     public function toggleEstado(User $usuario)
     {
-        // Prevenir que el superadmin se desactive a sí mismo
         if ($usuario->id === auth()->id()) {
             return back()->with('error', 'No puedes desactivarte a ti mismo.');
         }

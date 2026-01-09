@@ -1,0 +1,525 @@
+/* ============================================
+   PÁGINA NOSOTROS - ESTILOS
+   ============================================ */
+
+/* Hero Section con imagen de fondo */
+.nosotros-hero {
+    height: 60vh;
+    min-height: 400px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Cuando tengas una imagen de fondo, descomenta esto:
+    background-image: url('../images/nosotros/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    */
+    overflow: hidden;
+}
+
+.nosotros-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(102, 126, 234, 0.85);
+    z-index: 1;
+}
+
+.nosotros-hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    padding: 0 5%;
+}
+
+.nosotros-hero h1 {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 800;
+    margin-bottom: 20px;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.nosotros-hero p {
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    opacity: 0.95;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ============================================
+   SECCIÓN HISTORIA
+   ============================================ */
+
+.historia-section {
+    padding: 100px 5%;
+    background: white;
+}
+
+.historia-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+}
+
+.section-label {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+.historia-content h2 {
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    color: #2d3748;
+    margin-bottom: 25px;
+    font-weight: 800;
+}
+
+.historia-lead {
+    font-size: 1.3rem;
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.historia-content p {
+    color: #4a5568;
+    line-height: 1.8;
+    font-size: 1.05rem;
+    margin-bottom: 20px;
+}
+
+.historia-image {
+    position: relative;
+}
+
+.historia-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    position: relative;
+    z-index: 2;
+}
+
+.image-decoration {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 20px;
+    opacity: 0.2;
+    z-index: 1;
+}
+
+/* ============================================
+   MISIÓN Y VISIÓN
+   ============================================ */
+
+.mision-vision-section {
+    padding: 100px 5%;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.mision-vision-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
+}
+
+.mision-card {
+    background: white;
+    padding: 50px 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.mision-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+}
+
+.mision-card:hover::before {
+    transform: scaleX(1);
+}
+
+.mision-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+}
+
+.card-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.card-icon svg {
+    stroke: white;
+}
+
+.mision-card h3 {
+    font-size: 2rem;
+    color: #2d3748;
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.mision-card p {
+    color: #4a5568;
+    line-height: 1.8;
+    font-size: 1.05rem;
+}
+
+/* ============================================
+   EQUIPO Y EXPERTICIA
+   ============================================ */
+
+.equipo-section {
+    padding: 100px 5%;
+    background: white;
+}
+
+.equipo-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+}
+
+.equipo-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+.equipo-content h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #2d3748;
+    margin-bottom: 25px;
+    font-weight: 800;
+}
+
+.equipo-content > p {
+    color: #4a5568;
+    line-height: 1.8;
+    font-size: 1.05rem;
+    margin-bottom: 40px;
+}
+
+.equipo-features {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.feature-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.feature-icon {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover .feature-icon {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    transform: scale(1.1);
+}
+
+.feature-icon svg {
+    stroke: #667eea;
+}
+
+.feature-item:hover .feature-icon svg {
+    stroke: white;
+}
+
+.feature-text h4 {
+    font-size: 1.2rem;
+    color: #2d3748;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.feature-text p {
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+/* ============================================
+   INSTALACIONES
+   ============================================ */
+
+.instalaciones-section {
+    padding: 100px 5%;
+    background: #f8f9fa;
+}
+
+.instalaciones-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.instalaciones-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.instalaciones-header h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #2d3748;
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.instalaciones-header p {
+    font-size: 1.1rem;
+    color: #4a5568;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.instalaciones-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.instalacion-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.instalacion-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+}
+
+.instalacion-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.instalacion-card:hover img {
+    transform: scale(1.1);
+}
+
+.instalacion-content {
+    padding: 25px;
+}
+
+.instalacion-content h4 {
+    font-size: 1.3rem;
+    color: #2d3748;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.instalacion-content p {
+    color: #4a5568;
+    line-height: 1.6;
+}
+
+/* ============================================
+   CERTIFICACIONES
+   ============================================ */
+
+.certificaciones-section {
+    padding: 80px 5%;
+    background: white;
+}
+
+.certificaciones-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.certificaciones-container h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #2d3748;
+    margin-bottom: 15px;
+    font-weight: 800;
+}
+
+.certificaciones-subtitle {
+    font-size: 1.1rem;
+    color: #4a5568;
+    margin-bottom: 50px;
+}
+
+.certificaciones-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+}
+
+.cert-item {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    padding: 30px 20px;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.cert-item:hover {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.cert-icon {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+    color: #667eea;
+    font-weight: bold;
+}
+
+.cert-item:hover .cert-icon {
+    color: #667eea;
+}
+
+.cert-item p {
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.cert-item:hover p {
+    color: white;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 968px) {
+    .nosotros-hero {
+        height: 50vh;
+        min-height: 350px;
+    }
+
+    .historia-section,
+    .mision-vision-section,
+    .equipo-section,
+    .instalaciones-section {
+        padding: 60px 5%;
+    }
+
+    .historia-container,
+    .equipo-container {
+        grid-template-columns: 1fr;
+        gap: 50px;
+    }
+
+    .equipo-image {
+        order: -1;
+    }
+
+    .mision-vision-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .instalaciones-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .certificaciones-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .nosotros-hero {
+        height: 40vh;
+        min-height: 300px;
+    }
+
+    .historia-section,
+    .mision-vision-section,
+    .equipo-section,
+    .instalaciones-section,
+    .certificaciones-section {
+        padding: 50px 5%;
+    }
+
+    .section-label {
+        font-size: 0.75rem;
+        padding: 6px 15px;
+    }
+
+    .mision-card {
+        padding: 30px 25px;
+    }
+
+    .card-icon {
+        width: 70px;
+        height: 70px;
+    }
+
+    .instalacion-card img {
+        height: 200px;
+    }
+
+    .certificaciones-grid {
+        grid-template-columns: 1fr;
+    }
+}
