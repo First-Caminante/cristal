@@ -17,9 +17,9 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        // Si es vendedor, mostrar página en blanco
+        // Si es vendedor, redirigir directamente al mapa
         if ($user->isVendedor()) {
-            return view('dashboard.vendedor');
+            return redirect()->route('mapa.clientes');
         }
 
         // Si es superadmin o admin, mostrar dashboard con estadísticas

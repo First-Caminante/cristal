@@ -23,7 +23,15 @@
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Buscar Clientes</label>
                                 <input type="text" id="search-input" placeholder="Nombre, zona o teléfono..."
+                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 mb-3">
+
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Filtrar por Zona
+                                    (Carpetas)</label>
+                                <select id="zone-filter"
                                     class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="">Todas las Zonas</option>
+                                    <!-- Las zonas se cargarán por JS -->
+                                </select>
                             </div>
 
                             <div class="flex-1 overflow-y-auto border rounded-md bg-gray-50 mb-4" id="clientes-list">
@@ -127,6 +135,29 @@
             let currentRoute = null;
             let markers = [];
             let userMarker = null;
+            let allZonas = [];
+            let activeZoneId = '';
+
+            // Cargar Zonas desde la API
+            async function loadZonas() {
+                try {
+                    const response = await fetch('{{ route('api.zonas.index') }}');
+                    allZonas = await response.json();
+                    renderZoneFilter();
+                } catch (error) {
+                    console.error('Error al cargar zonas:', error);
+                }
+            }
+
+            function renderZoneFilter() {
+                const select = document.getElementById('zone-filter');
+                allZonas.forEach(zona => {
+                    const option = document.createElement('option');
+                    option.value = zona.id;
+                    option.textContent = zona.nombre + ' (' + zona.clientes.length + ')';
+                    select.appendChild(option);
+                });
+            }
 
             // Inicializar mapa
             function initMap() {
@@ -183,15 +214,24 @@
             // Filtrar clientes
             function filterClients() {
                 const searchTerm = document.getElementById('search-input').value.toLowerCase();
+                const zoneId = document.getElementById('zone-filter').value;
+                activeZoneId = zoneId;
 
                 filteredClientes = allClientes.filter(cliente => {
+                    // Filtro por término de búsqueda
                     const nombre = cliente.nombre ? cliente.nombre.toLowerCase() : '';
                     const zona = cliente.direccion?.zona ? cliente.direccion.zona.toLowerCase() : '';
                     const telefono = cliente.telefono ? cliente.telefono.toLowerCase() : '';
+                    const matchesSearch = nombre.includes(searchTerm) || zona.includes(searchTerm) || telefono.includes(searchTerm);
 
-                    return nombre.includes(searchTerm) ||
-                        zona.includes(searchTerm) ||
-                        telefono.includes(searchTerm);
+                    // Filtro por zona (JSON)
+                    let matchesZone = true;
+                    if (zoneId) {
+                        const selectedZone = allZonas.find(z => z.id === zoneId);
+                        matchesZone = selectedZone && selectedZone.clientes.includes(cliente.id);
+                    }
+
+                    return matchesSearch && matchesZone;
                 });
 
                 renderClientList();
@@ -221,22 +261,22 @@
                     };
 
                     item.innerHTML = `
-                                                                                                            <div class="flex items-center h-5 mt-1">
-                                                                                                                <input type="checkbox" 
-                                                                                                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                                                                                                       ${isSelected ? 'checked' : ''}
-                                                                                                                       onchange="toggleClientSelection(${cliente.id})">
-                                                                                                            </div>
-                                                                                                            <div class="flex-1 min-w-0">
-                                                                                                                <p class="text-sm font-medium text-gray-900 truncate">
-                                                                                                                    ${cliente.nombre}
-                                                                                                                </p>
-                                                                                                                <p class="text-xs text-gray-500 truncate">
-                                                                                                                    ${cliente.direccion?.zona || 'Sin zona'}
-                                                                                                                </p>
-                                                                                                                ${cliente.telefono ? `<p class="text-xs text-gray-400">${cliente.telefono}</p>` : ''}
-                                                                                                            </div>
-                                                                                                        `;
+                                                                                                                    <div class="flex items-center h-5 mt-1">
+                                                                                                                        <input type="checkbox" 
+                                                                                                                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                                                                                                               ${isSelected ? 'checked' : ''}
+                                                                                                                               onchange="toggleClientSelection(${cliente.id})">
+                                                                                                                    </div>
+                                                                                                                    <div class="flex-1 min-w-0">
+                                                                                                                        <p class="text-sm font-medium text-gray-900 truncate">
+                                                                                                                            ${cliente.nombre}
+                                                                                                                        </p>
+                                                                                                                        <p class="text-xs text-gray-500 truncate">
+                                                                                                                            ${cliente.direccion?.zona || 'Sin zona'}
+                                                                                                                        </p>
+                                                                                                                        ${cliente.telefono ? `<p class="text-xs text-gray-400">${cliente.telefono}</p>` : ''}
+                                                                                                                    </div>
+                                                                                                                `;
 
                     container.appendChild(item);
                 });
@@ -263,13 +303,17 @@
                 updateUI();
             }
 
-            // Actualizar marcadores en el mapa (Recrear todos)
+            // Actualizar marcadores en el mapa
             function updateMapMarkers() {
                 // Limpiar marcadores existentes
                 markers.forEach(m => m.marker.remove());
                 markers = [];
 
-                filteredClientes.forEach(cliente => {
+                // Combinamos los clientes filtrados con los ya seleccionados para que no desaparezcan del mapa
+                const selectedClientes = allClientes.filter(c => selectedClientIds.has(c.id));
+                const clientsToRender = [...new Map([...filteredClientes, ...selectedClientes].map(item => [item.id, item])).values()];
+
+                clientsToRender.forEach(cliente => {
                     const coords = getClientCoordinates(cliente);
                     if (!coords) return;
 
@@ -345,10 +389,10 @@
                 const hoverColor = isSelected ? 'hover:bg-green-600' : 'hover:bg-red-600';
 
                 element.innerHTML = `
-                                                                                                <div class="w-8 h-8 ${bgColor} rounded-full border-2 border-white shadow-lg flex items-center justify-center cursor-pointer ${hoverColor} transition transform hover:scale-110">
-                                                                                                    <span class="text-white text-xs font-bold">${isSelected ? '✓' : ''}</span>
-                                                                                                </div>
-                                                                                            `;
+                                                                                                        <div class="w-8 h-8 ${bgColor} rounded-full border-2 border-white shadow-lg flex items-center justify-center cursor-pointer ${hoverColor} transition transform hover:scale-110">
+                                                                                                            <span class="text-white text-xs font-bold">${isSelected ? '✓' : ''}</span>
+                                                                                                        </div>
+                                                                                                    `;
             }
 
 
@@ -357,40 +401,40 @@
                 let fotosHtml = '';
                 if (cliente.fotos && cliente.fotos.length > 0) {
                     fotosHtml = `
-                                                                                                            <div class="mt-2 grid grid-cols-2 gap-2">
-                                                                                                                ${cliente.fotos.slice(0, 4).map(foto => `
-                                                                                                                    <img src="${foto.url}" alt="${foto.descripcion}"
-                                                                                                                         class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75"
-                                                                                                                         onclick="window.open('${foto.url}', '_blank')">
-                                                                                                                `).join('')}
-                                                                                                            </div>
-                                                                                                        `;
+                                                                                                                    <div class="mt-2 grid grid-cols-2 gap-2">
+                                                                                                                        ${cliente.fotos.slice(0, 4).map(foto => `
+                                                                                                                            <img src="${foto.url}" alt="${foto.descripcion}"
+                                                                                                                                 class="w-full h-20 object-cover rounded cursor-pointer hover:opacity-75"
+                                                                                                                                 onclick="window.open('${foto.url}', '_blank')">
+                                                                                                                        `).join('')}
+                                                                                                                    </div>
+                                                                                                                `;
                 }
 
                 return `
-                                                                                                        <div class="p-2">
-                                                                                                            <h3 class="font-bold text-lg text-gray-900">${cliente.nombre}</h3>
-                                                                                                            <p class="text-sm text-gray-600 mt-1">
-                                                                                                                <strong>📍</strong> ${cliente.direccion?.completa || 'Sin dirección'}
-                                                                                                            </p>
-                                                                                                            ${cliente.telefono ? `
-                                                                                                                <p class="text-sm text-gray-600 mt-1">
-                                                                                                                    <strong>📞</strong> ${cliente.telefono}
-                                                                                                                </p>
-                                                                                                            ` : ''}
-                                                                                                            ${cliente.direccion?.referencia ? `
-                                                                                                                <p class="text-sm text-gray-600 mt-1">
-                                                                                                                    <strong>ℹ️</strong> ${cliente.direccion.referencia}
-                                                                                                                </p>
-                                                                                                            ` : ''}
-                                                                                                            ${fotosHtml}
-                                                                                                            <div class="mt-2">
-                                                                                                                <a href="/clientes/${cliente.id}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                                                                                                    Ver detalles →
-                                                                                                                </a>
-                                                                                                            </div>
-                                                                                                        </div>
-                                                                                                    `;
+                                                                                                                <div class="p-2">
+                                                                                                                    <h3 class="font-bold text-lg text-gray-900">${cliente.nombre}</h3>
+                                                                                                                    <p class="text-sm text-gray-600 mt-1">
+                                                                                                                        <strong>📍</strong> ${cliente.direccion?.completa || 'Sin dirección'}
+                                                                                                                    </p>
+                                                                                                                    ${cliente.telefono ? `
+                                                                                                                        <p class="text-sm text-gray-600 mt-1">
+                                                                                                                            <strong>📞</strong> ${cliente.telefono}
+                                                                                                                        </p>
+                                                                                                                    ` : ''}
+                                                                                                                    ${cliente.direccion?.referencia ? `
+                                                                                                                        <p class="text-sm text-gray-600 mt-1">
+                                                                                                                            <strong>ℹ️</strong> ${cliente.direccion.referencia}
+                                                                                                                        </p>
+                                                                                                                    ` : ''}
+                                                                                                                    ${fotosHtml}
+                                                                                                                    <div class="mt-2">
+                                                                                                                        <a href="/clientes/${cliente.id}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                                                                                                            Ver detalles →
+                                                                                                                        </a>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            `;
             }
 
             // Obtener coordenadas del cliente
@@ -588,6 +632,7 @@
 
             // Event Listeners
             document.getElementById('search-input').addEventListener('input', filterClients);
+            document.getElementById('zone-filter').addEventListener('change', filterClients);
 
             document.getElementById('btn-mi-ubicacion').addEventListener('click', function () {
                 if (navigator.geolocation) {
@@ -610,15 +655,15 @@
                                     const style = document.createElement('style');
                                     style.id = 'pulse-style';
                                     style.innerHTML = `
-                                                                                                                            @keyframes pulse {
-                                                                                                                                0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-                                                                                                                                70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-                                                                                                                                100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-                                                                                                                            }
-                                                                                                                            .pulse-animation {
-                                                                                                                                animation: pulse 2s infinite;
-                                                                                                                            }
-                                                                                                                        `;
+                                                                                                                                    @keyframes pulse {
+                                                                                                                                        0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+                                                                                                                                        70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+                                                                                                                                        100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+                                                                                                                                    }
+                                                                                                                                    .pulse-animation {
+                                                                                                                                        animation: pulse 2s infinite;
+                                                                                                                                    }
+                                                                                                                                `;
                                     document.head.appendChild(style);
                                 }
 
@@ -646,7 +691,10 @@
             document.getElementById('btn-calcular-ruta').addEventListener('click', calculateRoute);
 
             // Inicializar mapa cuando cargue el DOM
-            document.addEventListener('DOMContentLoaded', initMap);
+            document.addEventListener('DOMContentLoaded', () => {
+                initMap();
+                loadZonas();
+            });
         </script>
     @endpush
 </x-app-layout>

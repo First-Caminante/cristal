@@ -24,7 +24,7 @@ nav {
     grid-template-columns: auto 1fr auto auto auto; /* Logo | Nombre | Menú | Login | Hamburguesa */
     align-items: center;
     gap: 20px;
-    padding: 1rem 5% 1rem 0; /* POSICIÓN DEL LOGO: padding superior | derecho | inferior | izquierdo (0 = pegado al borde) */
+    padding: 1rem 5%; /* POSICIÓN DEL NAV: padding vertical | padding horizontal (simétrico) */
     max-width: 1400px;
     margin: 0 auto;
 }

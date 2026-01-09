@@ -52,6 +52,7 @@ use App\Http\Controllers\WebController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MapaClienteController;
+use App\Http\Controllers\ZonaClienteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -107,6 +108,12 @@ Route::middleware('auth')->group(function () {
         ])->parameters([
                     'productos-admin' => 'producto'
                 ]);
+
+        // Gestión de Zonas de Clientes
+        Route::get('/admin/zonas', [ZonaClienteController::class, 'index'])->name('zonas.index');
+        Route::post('/admin/zonas', [ZonaClienteController::class, 'store'])->name('zonas.store');
+        Route::patch('/admin/zonas/{id}', [ZonaClienteController::class, 'update'])->name('zonas.update');
+        Route::delete('/admin/zonas/{id}', [ZonaClienteController::class, 'destroy'])->name('zonas.destroy');
     });
 
     // ============================================
@@ -138,6 +145,9 @@ Route::middleware('auth')->group(function () {
         // Gestión de usuarios (CRUD completo para Superadmin)
         Route::resource('usuarios', \App\Http\Controllers\UsuarioController::class)->except(['index']);
     });
+
+    // API de Zonas (para el mapa, visible para todos los autenticados)
+    Route::get('/api/zonas', [ZonaClienteController::class, 'apiIndex'])->name('api.zonas.index');
 });
 
 require __DIR__ . '/auth.php';

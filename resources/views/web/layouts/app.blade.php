@@ -19,10 +19,7 @@
     {{-- HEADER --}}
     <header>
         <nav>
-            {{-- Logo solo imagen --}}
-            <a href="{{ route('web.home') }}" class="logo-link">
-                <img src="{{ asset('assets/images/logo3.png') }}" alt="Industrias Cristal Logo" class="logo-img">
-            </a>
+
 
             {{-- Nombre de la empresa --}}
             <div class="brand-name">Industrias Cristal</div>

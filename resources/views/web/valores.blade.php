@@ -21,7 +21,7 @@
             <!-- Valor 1: Calidad -->
             <div class="valor-card">
                 <div class="valor-image">
-                    <img src="{{ asset('assets/images/valores/calidad.jpg') }}" alt="Calidad Premium">
+                    <img src="{{ asset('assets/images/valores/calidad.png') }}" alt="Calidad Premium">
                     <div class="valor-overlay">
                         <span class="valor-number">01</span>
                     </div>
@@ -38,7 +38,7 @@
             <!-- Valor 2: Innovación -->
             <div class="valor-card">
                 <div class="valor-image">
-                    <img src="{{ asset('assets/images/valores/innovacion.jpg') }}" alt="Innovación Constante">
+                    <img src="{{ asset('assets/images/valores/innovacion.png') }}" alt="Innovación Constante">
                     <div class="valor-overlay">
                         <span class="valor-number">02</span>
                     </div>
@@ -55,7 +55,7 @@
             <!-- Valor 3: Integridad -->
             <div class="valor-card">
                 <div class="valor-image">
-                    <img src="{{ asset('assets/images/valores/integridad.jpg') }}" alt="Integridad y Ética">
+                    <img src="{{ asset('assets/images/valores/integridad.png') }}" alt="Integridad y Ética">
                     <div class="valor-overlay">
                         <span class="valor-number">03</span>
                     </div>

@@ -11,55 +11,88 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-
-                    {{-- Clientes y Mapa: Para todos (Superadmin, Administrador, Vendedor) --}}
-                    <x-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
-                        {{ __('Clientes') }}
-                    </x-nav-link>
-
-                    <x-nav-link :href="route('mapa.clientes')" :active="request()->routeIs('mapa.*')">
-                        🗺️ {{ __('Mapa') }}
-                    </x-nav-link>
-
-                    {{-- Testimonios y Promociones: Solo Superadmin y Administrador --}}
-                    @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
-                        <x-nav-link :href="route('testimonios.index')" :active="request()->routeIs('testimonios.*')">
-                            {{ __('Testimonios') }}
-                        </x-nav-link>
-
-                        <x-nav-link :href="route('promociones.index')" :active="request()->routeIs('promociones.*')">
-                            {{ __('Promociones') }}
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex items-center">
+                    @if(!auth()->user()->isVendedor())
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('Panel') }}
                         </x-nav-link>
                     @endif
 
-                    {{-- Administrar Inicio: Solo Superadmin --}}
-                    @if(auth()->user()->isSuperAdmin())
-                        <x-nav-link :href="route('admin.home.edit')" :active="request()->routeIs('admin.home.*')">
-                            {{ __('Administrar Inicio') }}
-                        </x-nav-link>
-                    @endif
+                    <!-- Dropdown de Gestión -->
+                    <div class="ms-3 relative">
+                        <x-dropdown align="left" width="64">
+                            <x-slot name="trigger">
+                                <button
+                                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                                    <div class="flex items-center">
+                                        <svg class="h-5 w-5 me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 6h16M4 12h16m-7 6h7"></path>
+                                        </svg>
+                                        {{ __('Módulos de Gestión') }}
+                                    </div>
 
-                    {{-- Gestión de Productos: Superadmin y Administrador --}}
-                    @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
-                        <x-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
-                            {{ __('Categorías Prod.') }}
-                        </x-nav-link>
+                                    <div class="ms-1">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </x-slot>
 
-                        <x-nav-link :href="route('productos.admin.index')"
-                            :active="request()->routeIs('productos.admin.*')">
-                            {{ __('Productos') }}
-                        </x-nav-link>
-                    @endif
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('clientes.index')">
+                                    👥 {{ __('Clientes') }}
+                                </x-dropdown-link>
 
-                    @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
-                        <x-nav-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.*')">
-                            {{ __('Usuarios') }}
-                        </x-nav-link>
-                    @endif
+                                <x-dropdown-link :href="route('mapa.clientes')">
+                                    🗺️ {{ __('Mapa de Clientes') }}
+                                </x-dropdown-link>
+
+                                @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
+                                    <div class="border-t border-gray-100 dark:border-gray-600"></div>
+                                    <div class="px-4 py-2 text-xs text-gray-400 uppercase tracking-widest">Administración
+                                    </div>
+
+                                    <x-dropdown-link :href="route('testimonios.index')">
+                                        💬 {{ __('Testimonios') }}
+                                    </x-dropdown-link>
+
+                                    <x-dropdown-link :href="route('promociones.index')">
+                                        🏷️ {{ __('Promociones') }}
+                                    </x-dropdown-link>
+
+                                    <x-dropdown-link :href="route('zonas.index')">
+                                        📂 {{ __('Zonas de Clientes') }}
+                                    </x-dropdown-link>
+
+                                    <x-dropdown-link :href="route('categorias.index')">
+                                        📦 {{ __('Categorías Prod.') }}
+                                    </x-dropdown-link>
+
+                                    <x-dropdown-link :href="route('productos.admin.index')">
+                                        🛍️ {{ __('Gestión Productos') }}
+                                    </x-dropdown-link>
+                                @endif
+
+                                @if(auth()->user()->isSuperAdmin())
+                                    <div class="border-t border-gray-100 dark:border-gray-600"></div>
+                                    <div class="px-4 py-2 text-xs text-gray-400 uppercase tracking-widest">Sistema</div>
+
+                                    <x-dropdown-link :href="route('admin.home.edit')">
+                                        🏠 {{ __('Administrar Inicio') }}
+                                    </x-dropdown-link>
+
+                                    <x-dropdown-link :href="route('usuarios.index')">
+                                        👤 {{ __('Gestión Usuarios') }}
+                                    </x-dropdown-link>
+                                @endif
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
                 </div>
             </div>
 
@@ -119,9 +152,11 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            @if(!auth()->user()->isVendedor())
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Panel') }}
+                </x-responsive-nav-link>
+            @endif
 
             {{-- Clientes y Mapa: Para todos --}}
             <x-responsive-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
@@ -132,7 +167,6 @@
                 🗺️ {{ __('Mapa') }}
             </x-responsive-nav-link>
 
-            {{-- Testimonios y Promociones: Solo Superadmin y Administrador --}}
             @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
                 <x-responsive-nav-link :href="route('testimonios.index')" :active="request()->routeIs('testimonios.*')">
                     {{ __('Testimonios') }}
@@ -140,6 +174,12 @@
 
                 <x-responsive-nav-link :href="route('promociones.index')" :active="request()->routeIs('promociones.*')">
                     {{ __('Promociones') }}
+                </x-responsive-nav-link>
+            @endif
+
+            @if(auth()->user()->isSuperAdmin() || auth()->user()->isAdmin())
+                <x-responsive-nav-link :href="route('zonas.index')" :active="request()->routeIs('zonas.*')">
+                    📂 {{ __('Zonas') }}
                 </x-responsive-nav-link>
             @endif
 
