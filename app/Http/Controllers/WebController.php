@@ -22,13 +22,13 @@ class WebController extends Controller
             ->limit(6)
             ->get();
 
-        // Obtener promoción activa (si hay)
-        $promocion = Promocion::activas()->with('fotos')->first();
+        // Obtener promociones activas
+        $promociones = Promocion::activas()->with('fotos')->get();
 
         // Obtener contenido dinámico del home
         $content = $this->getHomeContent();
 
-        return view('web.home', compact('testimonios', 'promocion', 'content'));
+        return view('web.home', compact('testimonios', 'promociones', 'content'));
     }
 
     private function getHomeContent()

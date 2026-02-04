@@ -2,9 +2,9 @@
 
 @section('title', 'Inicio - Industrias Cristal')
 
-@section('css')
-    <link rel="stylesheet" href="{{ asset('assets/css/stylehome.css') }}">
-@endsection
+    @section('css')
+        <link rel="stylesheet" href="{{ asset('assets/css/stylehome.css') }}">
+    @endsection
 
 @section('content')
     <!-- DEBUG: {{ json_encode($content) }} -->
@@ -29,66 +29,87 @@
         </div>
     </section>
 
-    @if($promocion)
+    @if($promociones->isNotEmpty())
         <!-- SECCIÓN PROMOCIÓN DEL MES -->
         <section class="promo-month">
-            <div class="promo-container">
-                <div class="promo-content">
-                    <span class="promo-badge">PROMOCIÓN DEL MES</span>
-                    <h2>{{ $promocion->titulo }}</h2>
-                    <p class="promo-description">
-                        {{ $promocion->descripcion }}
-                    </p>
-                    <div class="promo-details">
-                        <div class="promo-detail">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path
-                                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                                    stroke-width="2" />
-                                <path d="M12 6V12L16 14" stroke-width="2" stroke-linecap="round" />
-                            </svg>
-                            <span>Válido hasta {{ \Carbon\Carbon::parse($promocion->fecha_fin)->format('d/m/Y') }}</span>
-                        </div>
-                        <div class="promo-detail">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path
-                                    d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                <path
-                                    d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <span>Para todos los clientes</span>
-                        </div>
-                        <div class="promo-detail">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M9 11L12 14L22 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                <path
-                                    d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <span>Envío gratis en compras +150 Bs</span>
-                        </div>
-                    </div>
-                    <a href="{{ route('web.productos') }}" class="promo-button">Ver Productos en Oferta</a>
-                </div>
-                <div class="promo-image">
-                    <div class="promo-image-wrapper">
-                        @if($promocion->fotos->isNotEmpty())
-                            <img src="{{ asset('storage/' . $promocion->fotos->first()->ruta_foto) }}"
-                                alt="{{ $promocion->titulo }}">
-                        @else
-                            <img src="{{ asset('assets/images/home/promo_mes.png') }}" alt="Promoción del Mes">
-                        @endif
+            <div class="promo-slider-wrapper">
+                <div class="promo-slides-container">
+                    @foreach($promociones as $index => $promo)
+                        <div class="promo-slide {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}">
+                            <div class="promo-container">
+                                <div class="promo-content">
+                                    <span class="promo-badge">PROMOCIÓN DEL MES</span>
+                                    <h2>{{ $promo->titulo }}</h2>
+                                    <p class="promo-description">
+                                        {{ $promo->descripcion }}
+                                    </p>
+                                    <div class="promo-details">
+                                        <div class="promo-detail">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path
+                                                    d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                                                    stroke-width="2" />
+                                                <path d="M12 6V12L16 14" stroke-width="2" stroke-linecap="round" />
+                                            </svg>
+                                            <span>Válido hasta
+                                                {{ \Carbon\Carbon::parse($promo->fecha_fin)->format('d/m/Y') }}</span>
+                                        </div>
+                                        <div class="promo-detail">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                                <path
+                                                    d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path
+                                                    d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                            <span>Para todos los clientes</span>
+                                        </div>
+                                    </div>
+                                    <a href="{{ route('web.productos') }}" class="promo-button">Ver Productos en Oferta</a>
+                                </div>
+                                <div class="promo-image">
+                                    <div class="promo-image-wrapper">
+                                        @if($promo->fotos->isNotEmpty())
+                                            <img src="{{ asset('storage/' . $promo->fotos->first()->ruta_foto) }}"
+                                                alt="{{ $promo->titulo }}">
+                                        @else
+                                            <img src="{{ asset('assets/images/home/promo_mes.png') }}" alt="Promoción del Mes">
+                                        @endif
 
-                        @if($promocion->precio)
-                            <div class="promo-discount-badge">
-                                <span class="discount-number">{{ $promocion->precio }}</span>
-                                <span class="discount-text">Bs</span>
+                                        @if($promo->precio)
+                                            <div class="promo-discount-badge">
+                                                <span class="discount-number">{{ number_format($promo->precio, 0) }}</span>
+                                                <span class="discount-text">Bs</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
-                        @endif
-                    </div>
+                        </div>
+                    @endforeach
                 </div>
+
+                @if($promociones->count() > 1)
+                    <div class="promo-nav-buttons">
+                        <button class="promo-nav-btn prev" aria-label="Anterior">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <button class="promo-nav-btn next" aria-label="Siguiente">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="promo-dots">
+                        @foreach($promociones as $index => $promo)
+                            <div class="promo-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}"></div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
         </section>
     @endif
@@ -185,4 +206,66 @@
             @endforelse
         </div>
     </section>
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const promoSlides = document.querySelectorAll('.promo-slide');
+            const promoDots = document.querySelectorAll('.promo-dot');
+            const prevBtn = document.querySelector('.promo-nav-btn.prev');
+            const nextBtn = document.querySelector('.promo-nav-btn.next');
+            let currentPromo = 0;
+            let autoSlideInterval;
+
+            if (promoSlides.length > 1) {
+                function showSlide(index) {
+                    promoSlides.forEach(s => s.classList.remove('active'));
+                    promoDots.forEach(d => d.classList.remove('active'));
+
+                    promoSlides[index].classList.add('active');
+                    promoDots[index].classList.add('active');
+                    currentPromo = index;
+                }
+
+                function nextSlide() {
+                    let next = (currentPromo + 1) % promoSlides.length;
+                    showSlide(next);
+                }
+
+                function prevSlide() {
+                    let prev = (currentPromo - 1 + promoSlides.length) % promoSlides.length;
+                    showSlide(prev);
+                }
+
+                if (nextBtn) nextBtn.addEventListener('click', () => {
+                    nextSlide();
+                    resetAutoSlide();
+                });
+
+                if (prevBtn) prevBtn.addEventListener('click', () => {
+                    prevSlide();
+                    resetAutoSlide();
+                });
+
+                promoDots.forEach(dot => {
+                    dot.addEventListener('click', () => {
+                        showSlide(parseInt(dot.dataset.index));
+                        resetAutoSlide();
+                    });
+                });
+
+                function startAutoSlide() {
+                    autoSlideInterval = setInterval(nextSlide, 5000);
+                }
+
+                function resetAutoSlide() {
+                    clearInterval(autoSlideInterval);
+                    startAutoSlide();
+                }
+
+                startAutoSlide();
+            }
+        });
+    </script>
 @endsection
