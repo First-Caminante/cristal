@@ -52,11 +52,11 @@
                         @endif
 
                         @if($producto->caracteristicas && count($producto->caracteristicas) > 0)
-                            <div class="product-features mt-4">
+                            <ul class="product-features mt-4">
                                 @foreach($producto->caracteristicas as $caract)
-                                    <span class="feature-badge">{{ $caract }}</span>
+                                    <li>{{ $caract }}</li>
                                 @endforeach
-                            </div>
+                            </ul>
                         @endif
                     </div>
                 </div>
